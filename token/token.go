@@ -12,10 +12,23 @@ const (
 	LET   = "LET"
 	IDENT = "IDENT"
 	FUNC  = "FUNC"
+	TRUE = "TRUE"
+	FALSE = "FALSE"
+	IF = "IF"
+	ELSE = "ELSE"
+	RETURN = "RETURN"
 
 	INT    = "INT"
 	ASSIGN = "="
 	PLUS   = "+"
+	NOT = "!"
+	MINUS = "-"
+	DIV = "/"
+	MUL = "*"
+	LESS = "<"
+	MORE = ">"
+	EQUAL = "=="
+	NOTEQUAL = "!="
 
 	COMMA     = ","
 	SEMICOLON = ";"
@@ -31,6 +44,11 @@ const (
 var keywords = map[string]TokenType{
 	"let":  LET,
 	"func": FUNC,
+	"true": TRUE,
+	"false": FALSE,
+	"if": IF,
+	"else": ELSE,
+	"return": RETURN,
 }
 
 func NewToken(ttype TokenType, char byte) Token {

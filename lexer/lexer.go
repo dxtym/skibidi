@@ -34,7 +34,7 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.char {
 	case '=':
-		tok = token.NewToken(token.ASSIGN, l.char)
+		tok = l.makeTwoCharToken() // TODO: should it be a lexer method?
 	case '+':
 		tok = token.NewToken(token.PLUS, l.char)
 	case '(':
@@ -49,6 +49,18 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.NewToken(token.SEMICOLON, l.char)
 	case ',':
 		tok = token.NewToken(token.COMMA, l.char)
+	case '!':
+		tok = l.makeTwoCharToken()
+	case '-':
+		tok = token.NewToken(token.MINUS, l.char)
+	case '/':
+		tok = token.NewToken(token.DIV, l.char)
+	case '*':
+		tok = token.NewToken(token.MUL, l.char)
+	case '<':
+		tok = token.NewToken(token.LESS, l.char)
+	case '>':
+		tok = token.NewToken(token.MORE, l.char)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -90,4 +102,34 @@ func (l *Lexer) skipWhitespace() {
 
 func isInteger(char byte) bool {
 	return '0' <= char && char <= '9'
+}
+
+// check nxt pointer
+func (l *Lexer) peekChar() byte {
+	if l.nxt >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.nxt]
+	}
+}
+
+// compose tokens with two chars
+func (l *Lexer) makeTwoCharToken() token.Token {
+	ch := l.char
+	if l.peekChar() == '=' {
+		l.readChar()
+		if ch == '=' {
+			return token.Token{Type: token.EQUAL, Literal: "=="}
+		} else if ch == '!' {
+			return 	token.Token{Type: token.NOTEQUAL, Literal: "!="}
+		}
+	} else {
+		if ch == '=' {
+			return token.NewToken(token.ASSIGN, ch)
+		} else if ch == '!' {
+			return 	token.NewToken(token.NOT, ch)
+		}
+	}
+
+	return token.Token{Type: token.ILLEGAL, Literal: string(ch) + string(l.char)}
 }
