@@ -91,7 +91,7 @@ func (l *Lexer) readIdent() string {
 }
 
 func isLetter(char byte) bool {
-	return 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z' || char == '_'
+	return 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z'
 }
 
 func (l *Lexer) skipWhitespace() {

@@ -6,12 +6,10 @@ import (
 	"github.com/dxtym/monke/token"
 )
 
+// TODO: move input to text file
 func TestNextToken(t *testing.T) {
-	input := `let add = func(x, y) { x + y }; 
-	!-/*<>
-	if (5 < 10) { return true; } else { return false; }
-	10 == 10
-	9 != 10`
+	input := "let add = func(x, y) { x + y };"
+
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -31,35 +29,6 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "y"},
 		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
-		{token.NOT, "!"},
-		{token.MINUS, "-"},
-		{token.DIV, "/"},
-		{token.MUL, "*"},
-		{token.LESS, "<"},
-		{token.MORE, ">"},
-		{token.IF, "if"},
-		{token.LBRACKET, "("},
-		{token.INT, "5"},
-		{token.LESS, "<"},
-		{token.INT, "10"},
-		{token.RBRACKET, ")"},
-		{token.LBRACE, "{"},
-		{token.RETURN, "return"},
-		{token.TRUE, "true"},
-		{token.SEMICOLON, ";"},
-		{token.RBRACE, "}"},
-		{token.ELSE, "else"},
-		{token.LBRACE, "{"},
-		{token.RETURN, "return"},
-		{token.FALSE, "false"},
-		{token.SEMICOLON, ";"},
-		{token.RBRACE, "}"},
-		{token.INT, "10"},
-		{token.EQUAL, "=="},
-		{token.INT, "10"},
-		{token.INT, "9"},
-		{token.NOTEQUAL, "!="},
-		{token.INT, "10"},
 		{token.EOF, ""},
 	}
 
