@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/dxtym/monke/ast"
@@ -164,6 +165,143 @@ func TestIntegerLiteral(t *testing.T) {
 	}
 	if literal.TokenLiteral() != "5" {
 		t.Fatalf("literal.TokenLiteral() not equal to '5'. got=%q", literal.TokenLiteral())
+	}
+}
+
+func TestPrefixExpression(t *testing.T) {
+	tests := []struct{
+		in string
+		op string
+		val int64
+	}{
+		{"-1;", "-", 1},
+		{"!2;", "!", 2},
+	}
+
+	for _, tt := range tests {
+		l := lexer.NewLexer(tt.in)
+		p := NewParser(l)
+		program := p.Parse()
+		checkParser(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+		exp, ok := stmt.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression not *ast.PrefixExpression. got=%T", stmt.Expression)
+		}
+
+		if exp.Operator != tt.op {
+			t.Fatalf("exp.Operator not equal to %s. got=%s", tt.op, exp.Operator)
+		}
+
+		if !testIntegerLiteral(t, exp.Right, tt.val) {
+			return
+		}
+	}
+} 
+
+func TestInfixExpression(t *testing.T) {
+	tests := []struct{
+		in string
+		left int64
+		op string
+		right int64
+	}{
+		{"1 + 1;", 1, "+", 1},
+		{"1 - 1;", 1, "-", 1},
+		{"1 * 1;", 1, "*", 1},
+		{"1 / 1;", 1, "/", 1},
+		{"1 > 1;", 1, ">", 1},
+		{"1 < 1;", 1, "<", 1},
+		{"1 == 1;", 1, "==", 1},
+		{"1 != 1;", 1, "!=", 1},
+	}
+
+	for _, tt := range tests {
+		l := lexer.NewLexer(tt.in)
+		p := NewParser(l)
+		program := p.Parse()
+		checkParser(t, p)
+
+		if len(program.Statements) != 1 {
+			t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+		}
+
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+		}
+		exp, ok := stmt.Expression.(*ast.InfixExpression)
+		if !ok {
+			t.Fatalf("stmt.Expression not *ast.InfixExpression. got=%T", stmt.Expression)
+		}
+
+		if !testIntegerLiteral(t, exp.Left, tt.left) {
+			return
+		}
+		if exp.Operator != tt.op {
+			t.Fatalf("exp.Operator not equal to %s. got=%s", tt.op, exp.Operator)
+		}
+		if !testIntegerLiteral(t, exp.Right, tt.right) {
+			return
+		}
+	}
+}
+
+func testIntegerLiteral(t *testing.T, il ast.Expression, val int64) bool {
+	integer, ok := il.(*ast.IntegerLiteral)
+	if !ok {
+		t.Errorf("literal not *ast.IntegerLiteral. got=%T", il)
+		return false
+	}
+	if integer.Value != val {
+		t.Errorf("integer.Value not equal to %d. got=%d", val, integer.Value)
+		return false
+	}
+	if integer.TokenLiteral() != fmt.Sprintf("%d", val) {
+		t.Errorf("integer.TokenLiteral not equal to %d. got=%s", val, integer.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
+func TestOperatorPrecedence(t *testing.T) {
+	tests := []struct{
+		in string
+		out string
+	}{
+		{
+			"1 + 2 * 3 + 4 / 5 - 6",
+			"(((1 + (2 * 3)) + (4 / 5)) - 6)",
+		},
+		{
+			"2 > 1 == 3 < 4",
+			"((2 > 1) == (3 < 4))",
+		},
+		{
+			"3 + 4 * -5 != 3 * -1 + 4 * 5",
+			"((3 + (4 * (-5))) != ((3 * (-1)) + (4 * 5)))",
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.NewLexer(tt.in)
+		p := NewParser(l)
+		program := p.Parse()
+		checkParser(t, p)
+
+		actual := program.String()
+		if actual != tt.out {
+			t.Fatalf("expected=%q, got=%q", tt.out, actual)
+		}
 	}
 }
 
