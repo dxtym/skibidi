@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dxtym/monke/ast"
-	"github.com/dxtym/monke/lexer"
-	"github.com/dxtym/monke/token"
+	"github.com/dxtym/maymun/ast"
+	"github.com/dxtym/maymun/lexer"
+	"github.com/dxtym/maymun/token"
 )
 
 // to give operator precedence using enums
@@ -170,7 +170,9 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	leftExp := prefix()
 
-	// pratt parsing technique
+	// NOTE: 
+	// pratt parsing top-down approach
+	// check out left and right binding powers
 	for p.nxtToken.Type != token.SEMICOLON && precedence < p.peekPrecedence() {
 		infix := p.infixFnMap[p.nxtToken.Type]
 		if infix == nil {

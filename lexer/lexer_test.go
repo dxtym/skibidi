@@ -3,7 +3,7 @@ package lexer
 import (
 	"testing"
 
-	"github.com/dxtym/monke/token"
+	"github.com/dxtym/maymun/token"
 )
 
 // TODO: move input to text file

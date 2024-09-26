@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dxtym/monke/ast"
-	"github.com/dxtym/monke/lexer"
-	"github.com/dxtym/monke/token"
+	"github.com/dxtym/maymun/ast"
+	"github.com/dxtym/maymun/lexer"
+	"github.com/dxtym/maymun/token"
 )
 
 // TODO: move input to text file

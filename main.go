@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/dxtym/monke/repl"
+	"github.com/dxtym/maymun/repl"
 )
 
 func main() {

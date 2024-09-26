@@ -3,7 +3,7 @@ package ast
 import (
 	"bytes"
 
-	"github.com/dxtym/monke/token"
+	"github.com/dxtym/maymun/token"
 )
 
 type Node interface {
