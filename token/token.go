@@ -41,6 +41,7 @@ const (
 	EOF     = "EOF"
 )
 
+// TODO: change to uzbek
 var keywords = map[string]TokenType{
 	"let":  LET,
 	"func": FUNC,
