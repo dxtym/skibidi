@@ -61,6 +61,8 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.TRUE, p.parseBoolean)
 	p.registerPrefix(token.FALSE, p.parseBoolean)
 	p.registerPrefix(token.LBRACKET, p.parseBracket)
+	p.registerPrefix(token.IF, p.parseIfElseExpression)
+	p.registerPrefix(token.FUNC, p.parseFunctionLiteral)
 
 	// register infix functions to token types
 	p.infixFnMap = make(map[token.TokenType]infixFn)
@@ -284,4 +286,92 @@ func (p *Parser) parseBracket() ast.Expression {
 	}
 
 	return exp
+}
+
+func (p *Parser) parseIfElseExpression() ast.Expression {
+	exp := &ast.IfElseExpression{Token: p.currToken}
+	if p.nxtToken.Type != token.LBRACKET {
+		return nil
+	}
+
+	p.NextToken()
+	exp.Predicate = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+
+	exp.Consequence = p.parseBlockStatement()
+	if p.nxtToken.Type == token.ELSE {
+		p.NextToken()
+		if !p.expectPeek(token.LBRACE) {
+			return nil
+		}
+
+		exp.Alternative = p.parseBlockStatement()
+	}
+
+	return exp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{Token: p.currToken}
+	block.Statements = []ast.Statement{}
+
+	p.NextToken()
+	for p.currToken.Type != token.RBRACE && p.currToken.Type != token.EOF {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+		p.NextToken()
+	}
+
+	return block
+}
+
+func (p *Parser) parseFunctionLiteral() ast.Expression {
+	exp := &ast.FunctionLiteral{Token: p.currToken}
+
+	if !p.expectPeek(token.LBRACKET) {
+		return nil
+	}
+	exp.Arguments = p.parseFunctionArguments()
+
+	if !p.expectPeek(token.LBRACE) {
+		return nil
+	}
+	exp.Body = p.parseBlockStatement()
+
+	return exp
+}
+
+func (p *Parser) parseFunctionArguments() []*ast.Identifier {
+	idents := []*ast.Identifier{}
+	if p.nxtToken.Type == token.RBRACKET {
+		p.NextToken()
+		return idents
+	}
+
+	p.NextToken()
+	ident := &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
+	idents = append(idents, ident)
+
+	for p.nxtToken.Type == token.COMMA {
+		p.NextToken()
+		p.NextToken()
+		idents = append(idents, &ast.Identifier{
+			Token: p.currToken,
+			Value: p.currToken.Literal,
+		})
+	}
+	
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+
+	return idents
 }

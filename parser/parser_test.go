@@ -9,6 +9,8 @@ import (
 	"github.com/dxtym/maymun/token"
 )
 
+// TODO: standardize errors
+
 func checkParser(t *testing.T, p *Parser) {
 	err := p.Errors()
 	if len(err) == 0 {
@@ -434,5 +436,162 @@ func TestBoolean(t *testing.T) {
 			t.Fatalf("bo.TokenLiteral not %s. got=%s", tt.in[:len(tt.in)-1], bo.TokenLiteral())
 		}
 	}
+}
 
+func TestIfExpression(t *testing.T) {
+	input := "if (x < y) { x };"
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+	exp, ok := stmt.Expression.(*ast.IfElseExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression not *ast.Boolran. got=%T", stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Predicate, "<", "x", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("consequence is not 1 statements. got=%d\n", len(exp.Consequence.Statements))
+	}
+	cons, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("Statements[0] is not ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, cons.Expression, "x") {
+		return
+	}
+
+	if exp.Alternative != nil {
+		t.Errorf("exp.Alternative.Statements was not nil. got=%+v", exp.Alternative)
+	}
+}
+
+func TestIfElseExpression(t *testing.T) {
+	input := "if (x < y) { x } else { y };"
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+	exp, ok := stmt.Expression.(*ast.IfElseExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression not *ast.Boolran. got=%T", stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Predicate, "<", "x", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("exp.Consequence.Statements has not enough arguments. got=%d\n", len(exp.Consequence.Statements))
+	}
+	cons, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("exp.Consequence.Statements[0] is not ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, cons.Expression, "x") {
+		return
+	}
+
+	if len(exp.Alternative.Statements) != 1 {
+		t.Fatalf("exp.Alternative.Statements has not enough arguments. got=%d\n", len(exp.Alternative.Statements))
+	}
+	alt, ok := exp.Alternative.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("exp.Alternative.Statements[0] is not ast.ExpressionStatement. got=%T", exp.Alternative.Statements[0])
+	}
+
+	if !testIdentifier(t, alt.Expression, "y") {
+		return
+	}
+}
+
+func TestFunctionLiteral(t *testing.T) {
+	input := "func(x, y) {x + y};"
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+	fn, ok := stmt.Expression.(*ast.FunctionLiteral)
+	if !ok {
+		t.Fatalf("smt.Expression not *ast.FunctionLiteral. got=%T", stmt.Expression)
+	}
+
+	if len(fn.Arguments) != 2 {
+		t.Fatalf("fn.Arguments has not enough arguments. got=%d", len(fn.Arguments))
+	}
+
+	testLiteralExpression(t, fn.Arguments[0], "x")
+	testLiteralExpression(t, fn.Arguments[1], "y") 
+
+	if len(fn.Body.Statements) != 1 {
+		t.Fatalf("fn.Body.Statements has not enough arguments. got=%d", len(fn.Body.Statements))
+	}
+
+	body, ok := fn.Body.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("fn.Body.Expression[0] not *ast.ExperssionStatement. got=%T", fn.Body.Statements[0])
+	}
+
+	testInfixExpression(t, body.Expression, "+", "x", "y")
+}
+
+func TestFunctionArgumentParsing(t *testing.T) {
+	tests := []struct{
+		in string
+		out []string
+	}{
+		{"func() {}", []string{}},
+		{"func(x) {}", []string{"x"}},
+		{"func(x, y, z) {}", []string{"x", "y", "z"}},
+	}
+
+	for _, tt := range tests {
+		l := lexer.NewLexer(tt.in)
+		p := NewParser(l)
+		program := p.Parse()
+		checkParser(t, p)
+
+		stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
+		fn, _ := stmt.Expression.(*ast.FunctionLiteral)
+
+		if len(fn.Arguments) != len(tt.out) {
+			t.Fatalf("fn.Arguments has not enough arguments. got=%d", len(fn.Arguments))
+		}
+
+		for i := range fn.Arguments {
+			testLiteralExpression(t, fn.Arguments[i], tt.out[i])
+		}
+	}
 }

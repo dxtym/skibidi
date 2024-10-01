@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/dxtym/maymun/token"
 )
@@ -55,9 +56,11 @@ func (ls *LetStatement) String() string {
 	out.WriteString(ls.TokenLiteral() + " ")
 	out.WriteString(ls.Name.String())
 	out.WriteString(" = ")
+
 	if ls.Value != nil {
 		out.WriteString(ls.Value.String())
 	}
+	
 	out.WriteString(";")
 	return out.String()
 }
@@ -82,10 +85,12 @@ func (rs *ReturnStatement) statementNode() {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
 func (rs *ReturnStatement) String() string {
 	var out bytes.Buffer
+
 	out.WriteString(rs.TokenLiteral() + " ")
 	if rs.Value != nil {
 		out.WriteString(rs.Value.String())
 	}
+
 	out.WriteString(";")
 	return out.String()
 }
@@ -161,3 +166,70 @@ type Boolean struct {
 func (b *Boolean) expressionNode() {}
 func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
 func (b *Boolean) String() string { return b.Token.Literal }
+
+// if <predicate> <consequence> else <alternative>;
+type IfElseExpression struct {
+	Token token.Token
+	Predicate Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (iee *IfElseExpression) expressionNode() {}
+func (iee *IfElseExpression) TokenLiteral() string { return iee.Token.Literal }
+func (iee *IfElseExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("if")
+	out.WriteString(iee.TokenLiteral())
+	out.WriteString(" ")
+	out.WriteString(iee.Consequence.String())
+
+	if iee.Alternative != nil {
+		out.WriteString("else")
+		out.WriteString(iee.Alternative.String())
+	}
+
+	return out.String()
+}
+
+type BlockStatement struct {
+	Token token.Token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode() {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, stmt := range bs.Statements {
+		out.WriteString(stmt.String())
+	}
+
+	return out.String()
+}
+
+// func (<arguments>) {<body>};
+type FunctionLiteral struct {
+	Token token.Token
+	Arguments []*Identifier
+	Body *BlockStatement
+}
+
+func (fl *FunctionLiteral) expressionNode() {}
+func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
+func (fl *FunctionLiteral) String() string {
+	var out bytes.Buffer
+	out.WriteString(fl.TokenLiteral())
+
+	params := []string{}
+	for _, p := range fl.Arguments {
+		params = append(params, p.String())
+	}
+
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ","))
+	out.WriteString(")")
+	out.WriteString(fl.Body.String())
+	return out.String()
+}
