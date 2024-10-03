@@ -113,7 +113,7 @@ func (es *ExpressionStatement) String() string {
 // <number>;
 type IntegerLiteral struct {
 	Token token.Token
-	Value int64
+	Value int
 }
 
 func (il *IntegerLiteral) expressionNode() {}
@@ -231,5 +231,29 @@ func (fl *FunctionLiteral) String() string {
 	out.WriteString(strings.Join(params, ","))
 	out.WriteString(")")
 	out.WriteString(fl.Body.String())
+	return out.String()
+}
+
+// <expression>(<comma seperated expressions>);
+type CallExpression struct {
+	Token token.Token
+	Function Expression
+	Arguments []Expression
+}
+
+func (ce *CallExpression) expressionNode() {}
+func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
+func (ce *CallExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString(ce.TokenLiteral())
+
+	args := []string{}
+	for _, a := range ce.Arguments {
+		args = append(args, a.String())
+	}
+
+	out.WriteString("(")
+	out.WriteString(strings.Join(args, ","))
+	out.WriteString(")")
 	return out.String()
 }

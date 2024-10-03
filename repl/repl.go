@@ -6,7 +6,7 @@ import (
 	"io"
 
 	"github.com/dxtym/maymun/lexer"
-	"github.com/dxtym/maymun/token"
+	"github.com/dxtym/maymun/parser"
 )
 
 const PROMPT = ">> "
@@ -23,9 +23,21 @@ func Start(in io.Reader, out io.Writer) {
 
 		line := scanner.Text()
 		l := lexer.NewLexer(line)
+		p := parser.NewParser(l)
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
-		}
+		program := p.Parse()
+		if len(p.Errors()) != 0 {
+			printParseErrors(out, p.Errors())
+		} 
+
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
+	}
+}
+
+// TODO: could represent as a tree
+func printParseErrors(out io.Writer, err []string) {
+	for _, e := range err {
+		io.WriteString(out, "\t" + e + "\n")
 	}
 }

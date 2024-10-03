@@ -64,7 +64,7 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, val bool) bool {
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected any) bool {
 	switch v := expected.(type) {
-	case int64:
+	case int:
 		return testIntegerLiteral(t, exp, v)
 	case string:
 		return testIdentifier(t, exp, v)
@@ -99,7 +99,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, op string, left, righ
 
 // TODO: move input to text file
 func TestLetStatements(t *testing.T) {
-	input := "let x = 1; let y = 2;"
+	input := "let x = 1; let y = y;"
 
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
@@ -260,7 +260,7 @@ func TestPrefixExpression(t *testing.T) {
 	tests := []struct{
 		in string
 		op string
-		val int64
+		val int
 	}{
 		{"-1;", "-", 1},
 		{"!2;", "!", 2},
@@ -298,9 +298,9 @@ func TestPrefixExpression(t *testing.T) {
 func TestInfixExpression(t *testing.T) {
 	tests := []struct{
 		in string
-		left int64
+		left int
 		op string
-		right int64
+		right int
 	}{
 		{"1 + 1;", 1, "+", 1},
 		{"1 - 1;", 1, "-", 1},
@@ -343,7 +343,7 @@ func TestInfixExpression(t *testing.T) {
 	}
 }
 
-func testIntegerLiteral(t *testing.T, il ast.Expression, val int64) bool {
+func testIntegerLiteral(t *testing.T, il ast.Expression, val int) bool {
 	integer, ok := il.(*ast.IntegerLiteral)
 	if !ok {
 		t.Errorf("literal not *ast.IntegerLiteral. got=%T", il)
@@ -594,4 +594,35 @@ func TestFunctionArgumentParsing(t *testing.T) {
 			testLiteralExpression(t, fn.Arguments[i], tt.out[i])
 		}
 	}
+}
+
+func TestCallExpression(t *testing.T) {
+	input := "add(1 + 2, 3 / 1);"
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements has not enough arguments. got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+	exp, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("smt.Expression not *ast.CallExpression. got=%T", stmt.Expression)
+	}
+
+	if !testIdentifier(t, exp.Function, "add") {
+		t.Fatalf("exp.Function not eqaul to 'add'. got=%q", exp.Function)
+	}
+
+	if len(exp.Arguments) != 2 {
+		t.Fatalf("exp.Arguments has not enough arguments, got=%q", len(exp.Arguments))
+	}
+	testInfixExpression(t, exp.Arguments[0], "+", 1, 2)
+	testInfixExpression(t, exp.Arguments[1], "/", 3, 1)
 }
