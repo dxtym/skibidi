@@ -6,7 +6,6 @@ import (
 	"github.com/dxtym/maymun/token"
 )
 
-// TODO: move input to text file
 func TestNextToken(t *testing.T) {
 	input := "let add = func(x, y) { x + y };"
 
@@ -33,13 +32,13 @@ func TestNextToken(t *testing.T) {
 	}
 
 	l := NewLexer(input) // creates new lexer
-	for i, tt := range tests {
+	for _, tt := range tests {
 		token := l.NextToken() // gets next token
 		if token.Type != tt.expectedType {
-			t.Fatalf("test[%d] - wrong type. want=%q, got=%q", i, tt.expectedType, token.Type)
+			t.Fatalf("token.Type not equal to %s: got=%s", tt.expectedType, token.Type)
 		}
 		if token.Literal != tt.expectedLiteral {
-			t.Fatalf("test[%d] - wrong literal. want=%q, got=%q", i, tt.expectedLiteral, token.Literal)
+			t.Fatalf("token.Literal not equal to %s: got=%s", tt.expectedLiteral, token.Literal)
 		}
 	}
 }

@@ -28,7 +28,7 @@ func Start(in io.Reader, out io.Writer) {
 		program := p.Parse()
 		if len(p.Errors()) != 0 {
 			printParseErrors(out, p.Errors())
-		} 
+		}
 
 		io.WriteString(out, program.String())
 		io.WriteString(out, "\n")
@@ -38,6 +38,6 @@ func Start(in io.Reader, out io.Writer) {
 // TODO: could represent as a tree
 func printParseErrors(out io.Writer, err []string) {
 	for _, e := range err {
-		io.WriteString(out, "\t" + e + "\n")
+		io.WriteString(out, "\t"+e+"\n")
 	}
 }

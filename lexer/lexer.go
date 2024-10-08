@@ -121,13 +121,13 @@ func (l *Lexer) makeTwoCharToken() token.Token {
 		if ch == '=' {
 			return token.Token{Type: token.EQUAL, Literal: "=="}
 		} else if ch == '!' {
-			return 	token.Token{Type: token.NOTEQUAL, Literal: "!="}
+			return token.Token{Type: token.NOTEQUAL, Literal: "!="}
 		}
 	} else {
 		if ch == '=' {
 			return token.NewToken(token.ASSIGN, ch)
 		} else if ch == '!' {
-			return 	token.NewToken(token.NOT, ch)
+			return token.NewToken(token.NOT, ch)
 		}
 	}
 

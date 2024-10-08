@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Welcome to Monke language, %s!\n", user.Username)
-	fmt.Printf("Type any command below.\n")
+	fmt.Printf("Salom, %s!\n", user.Username)
+	fmt.Printf("Maymun tilida buyruqni quyida kiriting:\n")
 	repl.Start(os.Stdin, os.Stdout)
 }

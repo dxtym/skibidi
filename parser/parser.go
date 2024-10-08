@@ -13,41 +13,41 @@ import (
 const (
 	_ int = iota
 	LOWEST
-	EQUALS // ==
+	EQUALS      // ==
 	LESSGREATER // < >
-	SUM // +
-	PRODUCT // *
-	PREFIX // -x 
-	CALL // func(x)
+	SUM         // +
+	PRODUCT     // *
+	PREFIX      // -x
+	CALL        // func(x)
 )
 
 // associate types with precedences
 var precedences = map[token.TokenType]int{
-	token.EQUAL: EQUALS,
+	token.EQUAL:    EQUALS,
 	token.NOTEQUAL: EQUALS,
-	token.LESS: LESSGREATER,
-	token.MORE: LESSGREATER,
-	token.PLUS: SUM,
-	token.MINUS: SUM,
-	token.MUL: PRODUCT,
-	token.DIV: PRODUCT,
+	token.LESS:     LESSGREATER,
+	token.MORE:     LESSGREATER,
+	token.PLUS:     SUM,
+	token.MINUS:    SUM,
+	token.MUL:      PRODUCT,
+	token.DIV:      PRODUCT,
 	token.LBRACKET: CALL,
 }
 
 type (
 	prefixFn func() ast.Expression
-	infixFn func(ast.Expression) ast.Expression
+	infixFn  func(ast.Expression) ast.Expression
 )
 
 type Parser struct {
-	l *lexer.Lexer
+	l   *lexer.Lexer
 	err []string
 
 	currToken token.Token // current token
-	nxtToken token.Token // next token
+	nxtToken  token.Token // next token
 
 	prefixFnMap map[token.TokenType]prefixFn
-	infixFnMap map[token.TokenType]infixFn
+	infixFnMap  map[token.TokenType]infixFn
 }
 
 func NewParser(l *lexer.Lexer) *Parser {
@@ -76,7 +76,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.EQUAL, p.parseInfixExpression)
 	p.registerInfix(token.NOTEQUAL, p.parseInfixExpression)
 	p.registerInfix(token.LBRACKET, p.parseCallExpression)
-	
+
 	p.NextToken()
 	p.NextToken()
 	return p
@@ -159,7 +159,7 @@ func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 	stmt := &ast.ExpressionStatement{Token: p.currToken}
 	stmt.Expression = p.parseExpression(LOWEST)
-	
+
 	if p.nxtToken.Type == token.SEMICOLON {
 		p.NextToken()
 	}
@@ -180,7 +180,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	}
 	leftExp := prefix()
 
-	// NOTE: 
+	// NOTE:
 	// pratt parsing top-down approach
 	// check out left and right binding powers
 	for p.nxtToken.Type != token.SEMICOLON && precedence < p.peekPrecedence() {
@@ -196,21 +196,20 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	return leftExp
 }
 
-
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.currToken, Value: p.currToken.Literal}
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit := &ast.IntegerLiteral{Token: p.currToken}
-	
+
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
 		e := fmt.Sprintf("caanot convert %q to int", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
-	
+
 	lit.Value = val
 	return lit
 }
@@ -218,7 +217,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 // construct unary exp like <operator><exp>
 func (p *Parser) parsePrefixExpression() ast.Expression {
 	exp := &ast.PrefixExpression{
-		Token: p.currToken,
+		Token:    p.currToken,
 		Operator: p.currToken.Literal,
 	}
 
@@ -230,9 +229,9 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 // construct binary exp like <exp><operator><exp>
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	exp := &ast.InfixExpression{
-		Token: p.currToken,
+		Token:    p.currToken,
 		Operator: p.currToken.Literal,
-		Left: left,
+		Left:     left,
 	}
 
 	precedence := p.currPrecedence()
@@ -373,7 +372,7 @@ func (p *Parser) parseFunctionArguments() []*ast.Identifier {
 			Value: p.currToken.Literal,
 		})
 	}
-	
+
 	if !p.expectPeek(token.RBRACKET) {
 		return nil
 	}

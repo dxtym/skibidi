@@ -9,25 +9,25 @@ type Token struct {
 
 // available token types
 const (
-	LET   = "LET"
-	IDENT = "IDENT"
-	FUNC  = "FUNC"
-	TRUE = "TRUE"
-	FALSE = "FALSE"
-	IF = "IF"
-	ELSE = "ELSE"
+	LET    = "LET"
+	IDENT  = "IDENT"
+	FUNC   = "FUNC"
+	TRUE   = "TRUE"
+	FALSE  = "FALSE"
+	IF     = "IF"
+	ELSE   = "ELSE"
 	RETURN = "RETURN"
 
-	INT    = "INT"
-	ASSIGN = "="
-	PLUS   = "+"
-	NOT = "!"
-	MINUS = "-"
-	DIV = "/"
-	MUL = "*"
-	LESS = "<"
-	MORE = ">"
-	EQUAL = "=="
+	INT      = "INT"
+	ASSIGN   = "="
+	PLUS     = "+"
+	NOT      = "!"
+	MINUS    = "-"
+	DIV      = "/"
+	MUL      = "*"
+	LESS     = "<"
+	MORE     = ">"
+	EQUAL    = "=="
 	NOTEQUAL = "!="
 
 	COMMA     = ","
@@ -43,12 +43,12 @@ const (
 
 // TODO: change to uzbek
 var keywords = map[string]TokenType{
-	"let":  LET,
-	"func": FUNC,
-	"true": TRUE,
-	"false": FALSE,
-	"if": IF,
-	"else": ELSE,
+	"let":    LET,
+	"func":   FUNC,
+	"true":   TRUE,
+	"false":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
 	"return": RETURN,
 }
 
