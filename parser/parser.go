@@ -9,6 +9,9 @@ import (
 	"github.com/dxtym/maymun/token"
 )
 
+// TODO: check parser for correctness
+// saw some errors with if statements
+
 // to give operator precedence using enums
 const (
 	_ int = iota

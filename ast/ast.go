@@ -180,8 +180,7 @@ func (iee *IfElseExpression) TokenLiteral() string { return iee.Token.Literal }
 func (iee *IfElseExpression) String() string {
 	var out bytes.Buffer
 	out.WriteString("if")
-	out.WriteString(iee.TokenLiteral())
-	out.WriteString(" ")
+	out.WriteString(iee.Predicate.String())
 	out.WriteString(iee.Consequence.String())
 
 	if iee.Alternative != nil {
