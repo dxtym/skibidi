@@ -10,8 +10,8 @@ func TestNextToken(t *testing.T) {
 	input := "let add = func(x, y) { x + y };"
 
 	tests := []struct {
-		expectedType    token.TokenType
-		expectedLiteral string
+		got    token.TokenType
+		want string
 	}{
 		{token.LET, "let"},
 		{token.IDENT, "add"},
@@ -34,11 +34,11 @@ func TestNextToken(t *testing.T) {
 	l := NewLexer(input) // creates new lexer
 	for _, tt := range tests {
 		token := l.NextToken() // gets next token
-		if token.Type != tt.expectedType {
-			t.Fatalf("token.Type not equal to %s: got=%s", tt.expectedType, token.Type)
+		if token.Type != tt.got {
+			t.Fatalf("token.Type not equal to %s: got=%s", tt.got, token.Type)
 		}
-		if token.Literal != tt.expectedLiteral {
-			t.Fatalf("token.Literal not equal to %s: got=%s", tt.expectedLiteral, token.Literal)
+		if token.Literal != tt.want {
+			t.Fatalf("token.Literal not equal to %s: got=%s", tt.want, token.Literal)
 		}
 	}
 }

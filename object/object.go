@@ -8,6 +8,8 @@ const (
 	INTEGER_OBJECT = "INTEGER"
 	BOOLEAN_OBJECT = "BOOLEAN"
 	NULL_OBJECT    = "NULL"
+	RETURN_VAL_OBJECT = "RETURN_VAL"
+	ERROR_OBJECT = "ERROR"
 )
 
 type Object interface {
@@ -33,3 +35,18 @@ type Null struct{}
 
 func (n *Null) Type() ObjectType { return NULL_OBJECT }
 func (n *Null) Inspect() string  { return "null" }
+
+type ReturnValue struct {
+	Value Object
+}
+
+func (rv *ReturnValue) Type() ObjectType { return RETURN_VAL_OBJECT }
+func (rv *ReturnValue) Inspect() string { return rv.Value.Inspect() }
+
+// TODO: add stack trace from extra fields of token
+type Error struct {
+	Message string
+}
+
+func (e *Error) Type() ObjectType { return ERROR_OBJECT }
+func (e *Error) Inspect() string { return fmt.Sprintf("%s", e.Message) }

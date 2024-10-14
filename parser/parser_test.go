@@ -109,14 +109,14 @@ func TestLetStatements(t *testing.T) {
 	}
 
 	tests := []struct {
-		expectedIdentifier string
+		want string
 	}{
 		{"x"},
 		{"y"},
 	}
 	for i, tt := range tests {
 		stmt := program.Statements[i]
-		if !testLetStatement(t, stmt, tt.expectedIdentifier) {
+		if !testLetStatement(t, stmt, tt.want) {
 			return
 		}
 	}
@@ -252,16 +252,16 @@ func TestIntegerLiteral(t *testing.T) {
 
 func TestPrefixExpression(t *testing.T) {
 	tests := []struct {
-		in  string
+		got  string
 		op  string
-		val int
+		want int
 	}{
 		{"-1;", "-", 1},
 		{"!2;", "!", 2},
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.in)
+		l := lexer.NewLexer(tt.got)
 		p := NewParser(l)
 		program := p.Parse()
 		checkParser(t, p)
@@ -283,7 +283,7 @@ func TestPrefixExpression(t *testing.T) {
 			t.Fatalf("exp.Operator not equal to %s: got=%s", tt.op, exp.Operator)
 		}
 
-		if !testLiteralExpression(t, exp.Right, tt.val) {
+		if !testLiteralExpression(t, exp.Right, tt.want) {
 			return
 		}
 	}
@@ -291,7 +291,7 @@ func TestPrefixExpression(t *testing.T) {
 
 func TestInfixExpression(t *testing.T) {
 	tests := []struct {
-		in    string
+		got    string
 		left  int
 		op    string
 		right int
@@ -307,7 +307,7 @@ func TestInfixExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.in)
+		l := lexer.NewLexer(tt.got)
 		p := NewParser(l)
 		program := p.Parse()
 		checkParser(t, p)
@@ -357,8 +357,8 @@ func testIntegerLiteral(t *testing.T, il ast.Expression, val int) bool {
 
 func TestOperatorPrecedence(t *testing.T) {
 	tests := []struct {
-		in  string
-		out string
+		got  string
+		want string
 	}{
 		{
 			"3 > 5 == false",
@@ -383,29 +383,29 @@ func TestOperatorPrecedence(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.in)
+		l := lexer.NewLexer(tt.got)
 		p := NewParser(l)
 		program := p.Parse()
 		checkParser(t, p)
 
 		actual := program.String()
-		if actual != tt.out {
-			t.Fatalf("program.String not equal to %s: got=%s", tt.out, actual)
+		if actual != tt.want {
+			t.Fatalf("program.String not equal to %s: got=%s", tt.want, actual)
 		}
 	}
 }
 
 func TestBoolean(t *testing.T) {
 	tests := []struct {
-		in  string
-		out bool
+		got  string
+		want bool
 	}{
 		{"true;", true},
 		{"false;", false},
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.in)
+		l := lexer.NewLexer(tt.got)
 		p := NewParser(l)
 		program := p.Parse()
 		checkParser(t, p)
@@ -423,11 +423,11 @@ func TestBoolean(t *testing.T) {
 			t.Fatalf("stmt.Expression not *ast.Boolean: got=%T", stmt.Expression)
 		}
 
-		if bo.Value != tt.out {
-			t.Fatalf("bo.Value not equal to %t: got=%t", tt.out, bo.Value)
+		if bo.Value != tt.want {
+			t.Fatalf("bo.Value not equal to %t: got=%t", tt.want, bo.Value)
 		}
-		if bo.TokenLiteral() != tt.in[:len(tt.in)-1] {
-			t.Fatalf("bo.TokenLiteral not equal to %s: got=%s", tt.in[:len(tt.in)-1], bo.TokenLiteral())
+		if bo.TokenLiteral() != tt.got[:len(tt.got)-1] {
+			t.Fatalf("bo.TokenLiteral not equal to %s: got=%s", tt.got[:len(tt.got)-1], bo.TokenLiteral())
 		}
 	}
 }
@@ -563,8 +563,8 @@ func TestFunctionLiteral(t *testing.T) {
 
 func TestFunctionArgumentParsing(t *testing.T) {
 	tests := []struct {
-		in  string
-		out []string
+		got  string
+		want []string
 	}{
 		{"func() {}", []string{}},
 		{"func(x) {}", []string{"x"}},
@@ -572,7 +572,7 @@ func TestFunctionArgumentParsing(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.NewLexer(tt.in)
+		l := lexer.NewLexer(tt.got)
 		p := NewParser(l)
 		program := p.Parse()
 		checkParser(t, p)
@@ -580,12 +580,12 @@ func TestFunctionArgumentParsing(t *testing.T) {
 		stmt, _ := program.Statements[0].(*ast.ExpressionStatement)
 		fn, _ := stmt.Expression.(*ast.FunctionLiteral)
 
-		if len(fn.Arguments) != len(tt.out) {
-			t.Fatalf("fn.Arguments not equal to %d: got=%d", len(tt.out), len(fn.Arguments))
+		if len(fn.Arguments) != len(tt.want) {
+			t.Fatalf("fn.Arguments not equal to %d: got=%d", len(tt.want), len(fn.Arguments))
 		}
 
 		for i := range fn.Arguments {
-			testLiteralExpression(t, fn.Arguments[i], tt.out[i])
+			testLiteralExpression(t, fn.Arguments[i], tt.want[i])
 		}
 	}
 }
