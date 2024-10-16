@@ -14,45 +14,63 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
-func Eval(root ast.Node) object.Object {
+func Eval(root ast.Node, env *object.Environment) object.Object {
 	switch root := root.(type) {
 	// statements
 	case *ast.Program:
-		return evalProgram(root.Statements)
+		return evalProgram(root.Statements, env)
 	case *ast.ExpressionStatement:
-		return Eval(root.Expression)
+		return Eval(root.Expression, env)
 	case *ast.BlockStatement:
-		return evalBlockStatements(root.Statements)
+		return evalBlockStatements(root.Statements, env)
 	case *ast.ReturnStatement:
-		val := Eval(root.Value)
+		val := Eval(root.Value, env)
 		if checkError(val) { return val }
 		return &object.ReturnValue{Value: val}
-	// values
+	case *ast.LetStatement:
+		val := Eval(root.Value, env)
+		if checkError(val) { return val }
+		env.Set(root.Name.Value, val)
+	// expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: root.Value}
+	case *ast.Identifier:
+		return evalIdentifer(root, env)
 	case *ast.Boolean:
 		return boolToBooleanObject(root.Value)
+	case *ast.FunctionLiteral:
+		args := root.Arguments
+		body := root.Body
+		return &object.Function{Arguments: args, Body: body, Env: env}
+	case *ast.CallExpression:
+		fn := Eval(root.Function, env)
+		if checkError(fn) { return fn }
+		args := evalExpressions(root.Arguments, env)
+		if len(args) == 1 && checkError(args[0]) {
+			return args[0]
+		}
+		// TODO: eval inside body creating inner env
 	case *ast.PrefixExpression:
-		right := Eval(root.Right)
+		right := Eval(root.Right, env)
 		if checkError(right) { return right }
 		return evalPrefixExpression(root.Operator, right)
 	case *ast.InfixExpression:
-		left := Eval(root.Left)
+		left := Eval(root.Left, env)
 		if checkError(left) { return left }
-		right := Eval(root.Right)
+		right := Eval(root.Right, env)
 		if checkError(right) { return right }
 		return evalInfixExpression(root.Operator, left, right)
 	case *ast.IfElseExpression:
-		return evalIfElseExpression(root)
+		return evalIfElseExpression(root, env)
 	}
 
 	return nil
 }
 
-func evalProgram(stmts []ast.Statement) object.Object {
+func evalProgram(stmts []ast.Statement, env *object.Environment) object.Object {
 	var res object.Object
 	for _, node := range stmts {
-		res = Eval(node)
+		res = Eval(node, env)
 		switch res := res.(type) {
 		case *object.ReturnValue:
 			return res.Value
@@ -66,10 +84,10 @@ func evalProgram(stmts []ast.Statement) object.Object {
 // NOTE: 
 // to avoid return outermost value in nested
 // statements. not unwrap value but check its type
-func evalBlockStatements(stmts []ast.Statement) object.Object {
+func evalBlockStatements(stmts []ast.Statement, env *object.Environment) object.Object {
 	var res object.Object
 	for _, node := range stmts {
-		res = Eval(node)
+		res = Eval(node, env)
 		if res != nil {
 			rt := res.Type()
 			if rt == object.ERROR_OBJECT || rt == object.RETURN_VAL_OBJECT {
@@ -162,13 +180,13 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 }
 
 // TODO: revise complicated logic
-func evalIfElseExpression(exp *ast.IfElseExpression) object.Object {
-	cond := Eval(exp.Predicate)
+func evalIfElseExpression(exp *ast.IfElseExpression, env *object.Environment) object.Object {
+	cond := Eval(exp.Predicate, env)
 	if checkError(cond) { return cond }
 	if checkTruthy(cond) {
-		return Eval(exp.Consequence)
+		return Eval(exp.Consequence, env)
 	} else if exp.Alternative != nil {
-		return Eval(exp.Alternative)
+		return Eval(exp.Alternative, env)
 	} else {
 		return NULL
 	}
@@ -197,4 +215,23 @@ func checkError(obj object.Object) bool {
 		return obj.Type() == object.ERROR_OBJECT
 	}
 	return false
+}
+
+func evalIdentifer(node *ast.Identifier, env *object.Environment) object.Object {
+	val, ok := env.Get(node.Value)
+	if !ok {
+		return newError("unbound indentifier: %s", node.Value)
+	}
+	return val
+}
+
+func evalExpressions(node []ast.Expression, env *object.Environment) []object.Object {
+	res := []object.Object{}
+	for _, arg := range node {
+		evaled := Eval(arg, env)
+		// check for error and return immediately
+		if checkError(evaled) { return []object.Object{evaled} }
+		res = append(res, evaled)
+	}
+	return res
 }

@@ -1,6 +1,12 @@
 package object
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"strings"
+
+	"github.com/dxtym/maymun/ast"
+)
 
 type ObjectType string
 
@@ -10,6 +16,7 @@ const (
 	NULL_OBJECT    = "NULL"
 	RETURN_VAL_OBJECT = "RETURN_VAL"
 	ERROR_OBJECT = "ERROR"
+	FUNCTION_OBJECT = "FUNCTION"
 )
 
 type Object interface {
@@ -50,3 +57,45 @@ type Error struct {
 
 func (e *Error) Type() ObjectType { return ERROR_OBJECT }
 func (e *Error) Inspect() string { return fmt.Sprintf("%s", e.Message) }
+
+type Environment struct {
+	store map[string]Object
+}
+
+func NewEnvironment() *Environment {
+	return &Environment{store: make(map[string]Object)}
+}
+
+func (e *Environment) Get(name string) (Object, bool) {
+	val, ok := e.store[name]
+	return val, ok
+}
+
+func (e *Environment) Set(name string, val Object) Object {
+	e.store[name] = val
+	return val
+}
+
+type Function struct {
+	Arguments []*ast.Identifier
+	Body *ast.BlockStatement
+	Env *Environment
+}
+
+func (f *Function) Type() ObjectType { return FUNCTION_OBJECT }
+func (f *Function) Inspect() string {
+	var out bytes.Buffer
+
+	args := []string{}
+	for _, arg := range f.Arguments {
+		args = append(args, arg.String())
+	}
+
+	out.WriteString("func(")
+	out.WriteString(strings.Join(args, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+
+	return out.String()
+}

@@ -10,6 +10,8 @@ import (
 )
 
 var (
+	env = object.NewEnvironment()
+
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
@@ -19,7 +21,9 @@ func testEval(in string) object.Object {
 	l := lexer.NewLexer(in)
 	p := parser.NewParser(l)
 	program := p.Parse()
-	return eval.Eval(program)
+	env := object.NewEnvironment()
+
+	return eval.Eval(program, env)
 }
 
 func TestEvalIntegerExpression(t *testing.T) {
@@ -174,6 +178,7 @@ func TestErrorHandling(t *testing.T) {
 		{"-true;", "unknown operator: -BOOLEAN"},
 		{"true + false;", "unknown operator: BOOLEAN + BOOLEAN"},
 		{"1 - true; 1;", "type mismatch: INTEGER - BOOLEAN"},
+		{"foobar;", "unbound indentifier: foobar"},
 	}
 
 	for _, tt := range tests {
@@ -186,5 +191,59 @@ func TestErrorHandling(t *testing.T) {
 		if err.Message != tt.want {
 			t.Fatalf("err.Message not equal to %s: got=%s", tt.want, err.Message)
 		}
+	}
+}
+
+func TestLetStatement(t *testing.T) {
+	tests := []struct {
+		got string
+		want int
+	}{
+		{"let a = 1; a;", 1},
+		{"let a = 1; let b = a; b", 1},
+		{"let a = 1 + 2; let b = a + 1; b;", 4},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		testIntegerObject(t, evaled, tt.want)
+	}
+}
+
+func TestFunction(t *testing.T) {
+	got := "func(x) { x + 2; }"
+	evaled := testEval(got)
+
+	fn, ok := evaled.(*object.Function)
+	if !ok {
+		t.Fatalf("evaled not *object.Function: got=%T", evaled)
+	}
+
+	if len(fn.Arguments) != 1 {
+		t.Fatalf("fn.Arguments must be 1 statement: got=%d", len(fn.Arguments))
+	}
+	if fn.Arguments[0].String() != "x" {
+		t.Fatalf("fn.Arguments[0].String not equal to x: got=%s", fn.Arguments[0].String())
+	}
+
+	if fn.Body.String() != "(x + 2)" {
+		t.Fatalf("fn.Body.String not equal to (x + 2): got=%s", fn.Body.String())
+	}
+}
+
+func TestCallExpression(t *testing.T) {
+	tests := []struct {
+		got string
+		want int
+	}{
+		{"let a = fn(x) { x + 1; }; a(1);", 2},
+		{"let a = fn(x) { x + 1; }(1); a;", 2},
+		{"let a = fn(x, y) { return x + y; }; a(1, 2);", 3},
+		{"let a = fn(x) { fn(y) { x + y; } }; a(1)(2);", 3},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		testIntegerObject(t, evaled, tt.want)
 	}
 }

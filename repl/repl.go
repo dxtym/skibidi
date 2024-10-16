@@ -7,6 +7,7 @@ import (
 
 	"github.com/dxtym/maymun/eval"
 	"github.com/dxtym/maymun/lexer"
+	"github.com/dxtym/maymun/object"
 	"github.com/dxtym/maymun/parser"
 )
 
@@ -14,6 +15,7 @@ const PROMPT = ">> "
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
 
 	for {
 		fmt.Printf(PROMPT)
@@ -32,7 +34,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaled := eval.Eval(program)
+		evaled := eval.Eval(program, env)
 		if evaled != nil {
 			io.WriteString(out, evaled.Inspect())
 			io.WriteString(out, "\n")
