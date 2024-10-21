@@ -110,7 +110,7 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 	case "-":
 		return evalMinusOperatorExpression(right)
 	default:
-		return newError("unknown operator: %s%s", op, right.Type())
+		return newError("noaniq operatorlar: %s %s", op, right.Type())
 	}
 }
 
@@ -129,7 +129,7 @@ func evalNotOperatorExpression(right object.Object) object.Object {
 
 func evalMinusOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_OBJECT {
-		return newError("unknown operator: -%s", right.Type())
+		return newError("noaniq operator: -%s", right.Type())
 	}
 
 	val := right.(*object.Integer).Value
@@ -146,9 +146,9 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 	case op == "==":
 		return boolToBooleanObject(left == right)
 	case left.Type() != right.Type():
-		return newError("type mismatch: %s %s %s", left.Type(), op, right.Type())
+		return newError("mos tur emas: %T %T %T", left.Type(), op, right.Type())
 	default:
-		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
+		return newError("noaniq operatorlar: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -173,7 +173,7 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 	case "==":
 		return boolToBooleanObject(l == r)
 	default:
-		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
+		return newError("noaniq operatorlar: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -218,7 +218,7 @@ func checkError(obj object.Object) bool {
 func evalIdentifer(node *ast.Identifier, env *object.Environment) object.Object {
 	val, ok := env.Get(node.Value)
 	if !ok {
-		return newError("unbound indentifier: %s", node.Value)
+		return newError("erkin o'zgaruvchi: %s", node.Value)
 	}
 	return val
 }
@@ -238,7 +238,7 @@ func evalExpressions(node []ast.Expression, env *object.Environment) []object.Ob
 func applyFunctionArgs(fn object.Object, args []object.Object) object.Object {
 	function, ok := fn.(*object.Function)
 	if !ok {
-		return newError("not a function: %s", fn.Type())
+		return newError("amal emas: %s", fn.Type())
 	}
 	env := extendEnv(function, args)
 	res := Eval(function.Body, env)

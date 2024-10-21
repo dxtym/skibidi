@@ -35,10 +35,10 @@ func TestNextToken(t *testing.T) {
 	for _, tt := range tests {
 		token := l.NextToken() // gets next token
 		if token.Type != tt.got {
-			t.Fatalf("token.Type not equal to %s: got=%s", tt.got, token.Type)
+			t.Errorf("token.Type %q ga teng emas: %q", tt.got, token.Type)
 		}
 		if token.Literal != tt.want {
-			t.Fatalf("token.Literal not equal to %s: got=%s", tt.want, token.Literal)
+			t.Errorf("token.Literal %q ga teng emas: %q", tt.want, token.Literal)
 		}
 	}
 }

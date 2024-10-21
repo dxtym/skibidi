@@ -52,11 +52,11 @@ func TestEvalIntegerExpression(t *testing.T) {
 func testIntegerObject(t *testing.T, eval object.Object, out int) bool {
 	res, ok := eval.(*object.Integer)
 	if !ok {
-		t.Fatalf("eval not *object.Integer: got=%T", eval)
+		t.Errorf("eval not *object.Integer: got=%T", eval)
 		return false
 	}
 	if res.Value != out {
-		t.Fatalf("res.Value not equal to %d: got=%d", out, res.Value)
+		t.Errorf("res.Value not equal to %d: got=%d", out, res.Value)
 		return false
 	}
 	return true
@@ -93,11 +93,11 @@ func TestEvalBooleanExpression(t *testing.T) {
 func testBooleanObject(t *testing.T, eval object.Object, out bool) bool {
 	res, ok := eval.(*object.Boolean)
 	if !ok {
-		t.Fatalf("eval not *object.Boolean: got=%T", eval)
+		t.Errorf("eval not *object.Boolean: got=%T", eval)
 		return false
 	}
 	if res.Value != out {
-		t.Fatalf("res.Value not equal to %t: got=%t", out, res.Value)
+		t.Errorf("res.Value not equal to %t: got=%t", out, res.Value)
 		return false
 	}
 	return true
@@ -146,7 +146,7 @@ func TestIfElseExpression(t *testing.T) {
 
 func testNullObject(t *testing.T, eval object.Object) bool {
 	if eval != NULL {
-		t.Fatalf("object.Object not equal to NULL: got=%T", eval)
+		t.Errorf("object.Object not equal to NULL: got=%T", eval)
 		return false
 	}
 	return true
@@ -186,11 +186,11 @@ func TestErrorHandling(t *testing.T) {
 		evaled := testEval(tt.got)
 		err, ok := evaled.(*object.Error)
 		if !ok {
-			t.Fatalf("evaled not *object.Error: got=%T", evaled)
+			t.Errorf("evaled not *object.Error: got=%T", evaled)
 		}
 
 		if err.Message != tt.want {
-			t.Fatalf("err.Message not equal to %s: got=%s", tt.want, err.Message)
+			t.Errorf("err.Message not equal to %s: got=%s", tt.want, err.Message)
 		}
 	}
 }
@@ -217,18 +217,18 @@ func TestFunction(t *testing.T) {
 
 	fn, ok := evaled.(*object.Function)
 	if !ok {
-		t.Fatalf("evaled not *object.Function: got=%T", evaled)
+		t.Errorf("evaled not *object.Function: got=%T", evaled)
 	}
 
 	if len(fn.Parameters) != 1 {
-		t.Fatalf("fn.Parameters must be 1 statement: got=%d", len(fn.Parameters))
+		t.Errorf("fn.Parameters must be 1 statement: got=%d", len(fn.Parameters))
 	}
 	if fn.Parameters[0].String() != "x" {
-		t.Fatalf("fn.Parameters[0].String not equal to x: got=%s", fn.Parameters[0].String())
+		t.Errorf("fn.Parameters[0].String not equal to x: got=%s", fn.Parameters[0].String())
 	}
 
 	if fn.Body.String() != "(x + 2)" {
-		t.Fatalf("fn.Body.String not equal to (x + 2): got=%s", fn.Body.String())
+		t.Errorf("fn.Body.String not equal to (x + 2): got=%s", fn.Body.String())
 	}
 }
 

@@ -171,7 +171,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) noPrefixFnError(t token.TokenType) {
-	e := fmt.Sprintf("no prefix function found for %s", t)
+	e := fmt.Sprintf("amal emas: %s", t)
 	p.err = append(p.err, e)
 }
 
@@ -208,7 +208,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
-		e := fmt.Sprintf("cannot convert %q to int", p.currToken.Literal)
+		e := fmt.Sprintf("raqam emas: %s", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
@@ -255,8 +255,9 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) peekError(t token.TokenType) {
-	e := fmt.Sprintf("next token got=%s, expected=%s", t, p.nxtToken.Type)
-	p.err = append(p.err, e)
+	e1 := fmt.Sprintf("kelgan token: %s", t)
+	e2 := fmt.Sprintf("kutilgan token: %s", p.nxtToken.Type)
+	p.err = append(p.err, e1, e2)
 }
 
 func (p *Parser) registerPrefix(tt token.TokenType, fn prefixFn) {
