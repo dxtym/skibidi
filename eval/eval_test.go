@@ -67,8 +67,8 @@ func TestEvalBooleanExpression(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"true", true},
-		{"false", false},
+		{"ijobiy", true},
+		{"salbiy", false},
 		{"1 < 2", true},
 		{"1 > 2", false},
 		{"1 < 1", false},
@@ -77,11 +77,11 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
-		{"true == true", true},
-		{"false == false", true},
-		{"true == false", false},
-		{"true != false", true},
-		{"false != true", true},
+		{"ijobiy == ijobiy", true},
+		{"salbiy == salbiy", true},
+		{"ijobiy == salbiy", false},
+		{"ijobiy != salbiy", true},
+		{"salbiy != ijobiy", true},
 	}
 
 	for _, tt := range tests {
@@ -108,10 +108,10 @@ func TestNotOperator(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"!true", false},
-		{"!false", true},
-		{"!!true", true},
-		{"!!false", false},
+		{"!ijobiy", false},
+		{"!salbiy", true},
+		{"!!ijobiy", true},
+		{"!!salbiy", false},
 		{"!1", false},
 	}
 
@@ -126,11 +126,11 @@ func TestIfElseExpression(t *testing.T) {
 		got string
 		want any
 	}{
-		{"if (1) {2};", 2},
-		{"if (true) {1};", 1},
-		{"if (2 > 1) {2};", 2},
-		{"if (false) {1};", nil},
-		{"if (1 > 2) {2} else {1};", 1},
+		{"agar (1) {2};", 2},
+		{"agar (ijobiy) {1};", 1},
+		{"agar (2 > 1) {2};", 2},
+		{"agar (salbiy) {1};", nil},
+		{"agar (1 > 2) {2} yana {1};", 1},
 	}
 
 	for _, tt := range tests {
@@ -157,10 +157,11 @@ func TestReturnValue(t *testing.T) {
 		got string
 		want int
 	}{
-		{"return 1; 2;", 1},
-		{"1 * 2; return 2; 1;", 2},
-		{"return 2; 2 * 1;", 2},
-		{"return 1; return 2;", 1},
+		{"qaytar 1; 2;", 1},
+		{"1 * 2; qaytar 2; 1;", 2},
+		{"qaytar 2; 2 * 1;", 2},
+		{"qaytar 1; qaytar 2;", 1},
+		{"amal(x, y) { x + y; }(1, 2)", 3},
 	}
 
 	for _, tt := range tests {
@@ -174,10 +175,10 @@ func TestErrorHandling(t *testing.T) {
 		got string
 		want string
 	}{
-		{"1 + true;", "type mismatch: INTEGER + BOOLEAN"},
-		{"-true;", "unknown operator: -BOOLEAN"},
-		{"true + false;", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"1 - true; 1;", "type mismatch: INTEGER - BOOLEAN"},
+		{"1 + ijobiy;", "type mismatch: INTEGER + BOOLEAN"},
+		{"-ijobiy;", "unknown operator: -BOOLEAN"},
+		{"ijobiy + salbiy;", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"1 - ijobiy; 1;", "type mismatch: INTEGER - BOOLEAN"},
 		{"foobar;", "unbound indentifier: foobar"},
 	}
 
@@ -199,9 +200,9 @@ func TestLetStatement(t *testing.T) {
 		got string
 		want int
 	}{
-		{"let a = 1; a;", 1},
-		{"let a = 1; let b = a; b", 1},
-		{"let a = 1 + 2; let b = a + 1; b;", 4},
+		{"deylik a = 1; a;", 1},
+		{"deylik a = 1; deylik b = a; b", 1},
+		{"deylik a = 1 + 2; deylik b = a + 1; b;", 4},
 	}
 
 	for _, tt := range tests {
@@ -211,7 +212,7 @@ func TestLetStatement(t *testing.T) {
 }
 
 func TestFunction(t *testing.T) {
-	got := "func(x) { x + 2; }"
+	got := "amal(x) { x + 2; }"
 	evaled := testEval(got)
 
 	fn, ok := evaled.(*object.Function)
@@ -219,11 +220,11 @@ func TestFunction(t *testing.T) {
 		t.Fatalf("evaled not *object.Function: got=%T", evaled)
 	}
 
-	if len(fn.Arguments) != 1 {
-		t.Fatalf("fn.Arguments must be 1 statement: got=%d", len(fn.Arguments))
+	if len(fn.Parameters) != 1 {
+		t.Fatalf("fn.Parameters must be 1 statement: got=%d", len(fn.Parameters))
 	}
-	if fn.Arguments[0].String() != "x" {
-		t.Fatalf("fn.Arguments[0].String not equal to x: got=%s", fn.Arguments[0].String())
+	if fn.Parameters[0].String() != "x" {
+		t.Fatalf("fn.Parameters[0].String not equal to x: got=%s", fn.Parameters[0].String())
 	}
 
 	if fn.Body.String() != "(x + 2)" {
@@ -236,10 +237,10 @@ func TestCallExpression(t *testing.T) {
 		got string
 		want int
 	}{
-		{"let a = fn(x) { x + 1; }; a(1);", 2},
-		{"let a = fn(x) { x + 1; }(1); a;", 2},
-		{"let a = fn(x, y) { return x + y; }; a(1, 2);", 3},
-		{"let a = fn(x) { fn(y) { x + y; } }; a(1)(2);", 3},
+		{"deylik a = amal(x) { x + 1; }; a(1);", 2},
+		{"deylik a = amal(x) { x + 1; }(1); a;", 2},
+		{"deylik a = amal(x, y) { qaytar x + y; }; a(1, 2);", 3},
+		{"deylik a = amal(x) { amal(y) { x + y; } }; a(1)(2);", 3},
 	}
 
 	for _, tt := range tests {

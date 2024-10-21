@@ -211,7 +211,7 @@ func (bs *BlockStatement) String() string {
 // func (<arguments>) {<body>};
 type FunctionLiteral struct {
 	Token     token.Token
-	Arguments []*Identifier
+	Parameters []*Identifier
 	Body      *BlockStatement
 }
 
@@ -222,7 +222,7 @@ func (fl *FunctionLiteral) String() string {
 	out.WriteString(fl.TokenLiteral())
 
 	params := []string{}
-	for _, p := range fl.Arguments {
+	for _, p := range fl.Parameters {
 		params = append(params, p.String())
 	}
 

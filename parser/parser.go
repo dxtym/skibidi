@@ -208,7 +208,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
-		e := fmt.Sprintf("caanot convert %q to int", p.currToken.Literal)
+		e := fmt.Sprintf("cannot convert %q to int", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
@@ -346,7 +346,7 @@ func (p *Parser) parseFunctionLiteral() ast.Expression {
 	if !p.expectPeek(token.LBRACKET) {
 		return nil
 	}
-	exp.Arguments = p.parseFunctionArguments()
+	exp.Parameters = p.parseFunctionArguments()
 
 	if !p.expectPeek(token.LBRACE) {
 		return nil

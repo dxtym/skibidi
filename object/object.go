@@ -60,14 +60,27 @@ func (e *Error) Inspect() string { return fmt.Sprintf("%s", e.Message) }
 
 type Environment struct {
 	store map[string]Object
+	other *Environment
 }
 
 func NewEnvironment() *Environment {
-	return &Environment{store: make(map[string]Object)}
+	return &Environment{
+		store: make(map[string]Object),
+		other: nil,
+	}
+}
+
+func NewEnclosedEnvironment(other *Environment) *Environment {
+	env := NewEnvironment()
+	env.other = other
+	return env
 }
 
 func (e *Environment) Get(name string) (Object, bool) {
 	val, ok := e.store[name]
+	if !ok && e.other != nil {
+		val, ok = e.other.Get(name)
+	}
 	return val, ok
 }
 
@@ -77,7 +90,7 @@ func (e *Environment) Set(name string, val Object) Object {
 }
 
 type Function struct {
-	Arguments []*ast.Identifier
+	Parameters []*ast.Identifier
 	Body *ast.BlockStatement
 	Env *Environment
 }
@@ -87,7 +100,7 @@ func (f *Function) Inspect() string {
 	var out bytes.Buffer
 
 	args := []string{}
-	for _, arg := range f.Arguments {
+	for _, arg := range f.Parameters {
 		args = append(args, arg.String())
 	}
 

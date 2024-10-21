@@ -39,17 +39,15 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 	case *ast.Boolean:
 		return boolToBooleanObject(root.Value)
 	case *ast.FunctionLiteral:
-		args := root.Arguments
+		params := root.Parameters
 		body := root.Body
-		return &object.Function{Arguments: args, Body: body, Env: env}
+		return &object.Function{Parameters: params, Body: body, Env: env}
 	case *ast.CallExpression:
 		fn := Eval(root.Function, env)
 		if checkError(fn) { return fn }
 		args := evalExpressions(root.Arguments, env)
-		if len(args) == 1 && checkError(args[0]) {
-			return args[0]
-		}
-		// TODO: eval inside body creating inner env
+		if len(args) == 1 && checkError(args[0]) { return args[0] }
+		return applyFunctionArgs(fn, args)
 	case *ast.PrefixExpression:
 		right := Eval(root.Right, env)
 		if checkError(right) { return right }
@@ -233,5 +231,34 @@ func evalExpressions(node []ast.Expression, env *object.Environment) []object.Ob
 		if checkError(evaled) { return []object.Object{evaled} }
 		res = append(res, evaled)
 	}
+	return res
+}
+
+// enclose inner scope with outer scope for functions
+func applyFunctionArgs(fn object.Object, args []object.Object) object.Object {
+	function, ok := fn.(*object.Function)
+	if !ok {
+		return newError("not a function: %s", fn.Type())
+	}
+	env := extendEnv(function, args)
+	res := Eval(function.Body, env)
+	return unwrapReturnValue(res)
+}
+
+func extendEnv(fn *object.Function, args []object.Object) *object.Environment {
+	env := object.NewEnclosedEnvironment(fn.Env)
+	for i, p := range fn.Parameters {
+		env.Set(p.Value, args[i])
+	}
+	return env
+}
+
+// NOTE:
+// to stop return statement from bubbling up
+// and ending evaluation for all of them
+func unwrapReturnValue(res object.Object) object.Object {
+	if val, ok := res.(*object.ReturnValue); ok {
+		return val.Value
+	} 
 	return res
 }
