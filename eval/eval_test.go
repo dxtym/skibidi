@@ -62,6 +62,32 @@ func testIntegerObject(t *testing.T, eval object.Object, out int) bool {
 	return true
 }
 
+func TestStringExpression(t *testing.T) {
+	input := `"hello, world"`
+	evaled := testEval(input)
+	str, ok := evaled.(*object.String)
+	if !ok {
+		t.Errorf("evaled not *object.String: got=%T", evaled)
+	}
+
+	if str.Value != "hello, world" {
+		t.Errorf("str.Value not equal to %s: got=%s", "hello, world", str.Value)
+	}
+}
+
+func TestStringConcatExpression(t *testing.T) {
+	input := `"hello," + " " + "world"`
+	evaled := testEval(input)
+	str, ok := evaled.(*object.String)
+	if !ok {
+		t.Errorf("evaled not *object.String: got=%T", evaled)
+	}
+
+	if str.Value != "hello, world" {
+		t.Errorf("str.Value not equal to %s: got=%s", "hello, world", str.Value)
+	}
+}
+
 func TestEvalBooleanExpression(t *testing.T) {
 	tests := []struct {
 		got  string
@@ -123,7 +149,7 @@ func TestNotOperator(t *testing.T) {
 
 func TestIfElseExpression(t *testing.T) {
 	tests := []struct {
-		got string
+		got  string
 		want any
 	}{
 		{"agar (1) {2};", 2},
@@ -154,7 +180,7 @@ func testNullObject(t *testing.T, eval object.Object) bool {
 
 func TestReturnValue(t *testing.T) {
 	tests := []struct {
-		got string
+		got  string
 		want int
 	}{
 		{"qaytar 1; 2;", 1},
@@ -172,14 +198,15 @@ func TestReturnValue(t *testing.T) {
 
 func TestErrorHandling(t *testing.T) {
 	tests := []struct {
-		got string
+		got  string
 		want string
 	}{
 		{"1 + ijobiy;", "type mismatch: INTEGER + BOOLEAN"},
 		{"-ijobiy;", "unknown operator: -BOOLEAN"},
 		{"ijobiy + salbiy;", "unknown operator: BOOLEAN + BOOLEAN"},
 		{"1 - ijobiy; 1;", "type mismatch: INTEGER - BOOLEAN"},
-		{"foobar;", "unbound indentifier: foobar"},
+		{"foobar;", "unbound identifier: foobar"},
+		{`"foobar" - "barfoo";`, "unknown operator: STRING - STRING"},
 	}
 
 	for _, tt := range tests {
@@ -197,7 +224,7 @@ func TestErrorHandling(t *testing.T) {
 
 func TestLetStatement(t *testing.T) {
 	tests := []struct {
-		got string
+		got  string
 		want int
 	}{
 		{"deylik a = 1; a;", 1},
@@ -234,7 +261,7 @@ func TestFunction(t *testing.T) {
 
 func TestCallExpression(t *testing.T) {
 	tests := []struct {
-		got string
+		got  string
 		want int
 	}{
 		{"deylik a = amal(x) { x + 1; }; a(1);", 2},

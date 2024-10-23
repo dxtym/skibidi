@@ -25,15 +25,21 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 		return evalBlockStatements(root.Statements, env)
 	case *ast.ReturnStatement:
 		val := Eval(root.Value, env)
-		if checkError(val) { return val }
+		if checkError(val) {
+			return val
+		}
 		return &object.ReturnValue{Value: val}
 	case *ast.LetStatement:
 		val := Eval(root.Value, env)
-		if checkError(val) { return val }
+		if checkError(val) {
+			return val
+		}
 		env.Set(root.Name.Value, val)
 	// expressions
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: root.Value}
+	case *ast.StringLiteral:
+		return &object.String{Value: root.Value}
 	case *ast.Identifier:
 		return evalIdentifer(root, env)
 	case *ast.Boolean:
@@ -44,19 +50,29 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 		return &object.Function{Parameters: params, Body: body, Env: env}
 	case *ast.CallExpression:
 		fn := Eval(root.Function, env)
-		if checkError(fn) { return fn }
+		if checkError(fn) {
+			return fn
+		}
 		args := evalExpressions(root.Arguments, env)
-		if len(args) == 1 && checkError(args[0]) { return args[0] }
+		if len(args) == 1 && checkError(args[0]) {
+			return args[0]
+		}
 		return applyFunctionArgs(fn, args)
 	case *ast.PrefixExpression:
 		right := Eval(root.Right, env)
-		if checkError(right) { return right }
+		if checkError(right) {
+			return right
+		}
 		return evalPrefixExpression(root.Operator, right)
 	case *ast.InfixExpression:
 		left := Eval(root.Left, env)
-		if checkError(left) { return left }
+		if checkError(left) {
+			return left
+		}
 		right := Eval(root.Right, env)
-		if checkError(right) { return right }
+		if checkError(right) {
+			return right
+		}
 		return evalInfixExpression(root.Operator, left, right)
 	case *ast.IfElseExpression:
 		return evalIfElseExpression(root, env)
@@ -79,7 +95,7 @@ func evalProgram(stmts []ast.Statement, env *object.Environment) object.Object {
 	return res
 }
 
-// NOTE: 
+// NOTE:
 // to avoid return outermost value in nested
 // statements. not unwrap value but check its type
 func evalBlockStatements(stmts []ast.Statement, env *object.Environment) object.Object {
@@ -110,7 +126,7 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 	case "-":
 		return evalMinusOperatorExpression(right)
 	default:
-		return newError("noaniq operatorlar: %s %s", op, right.Type())
+		return newError("unknown operator: %s %s", op, right.Type())
 	}
 }
 
@@ -129,7 +145,7 @@ func evalNotOperatorExpression(right object.Object) object.Object {
 
 func evalMinusOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_OBJECT {
-		return newError("noaniq operator: -%s", right.Type())
+		return newError("unknown operator: -%s", right.Type())
 	}
 
 	val := right.(*object.Integer).Value
@@ -140,15 +156,17 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.INTEGER_OBJECT && right.Type() == object.INTEGER_OBJECT:
 		return evalIntegerInfixExpression(op, left, right)
+	case left.Type() == object.STRING_OBJECT && right.Type() == object.STRING_OBJECT:
+		return evalStringConcatInfixExpression(op, left, right)
 	// pointer comparison (works because of TRUE and FALSE)
 	case op == "!=":
 		return boolToBooleanObject(left != right)
 	case op == "==":
 		return boolToBooleanObject(left == right)
 	case left.Type() != right.Type():
-		return newError("mos tur emas: %T %T %T", left.Type(), op, right.Type())
+		return newError("type mismatch: %s %s %s", left.Type(), op, right.Type())
 	default:
-		return newError("noaniq operatorlar: %s %s %s", left.Type(), op, right.Type())
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -173,14 +191,27 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 	case "==":
 		return boolToBooleanObject(l == r)
 	default:
-		return newError("noaniq operatorlar: %s %s %s", left.Type(), op, right.Type())
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
 	}
+}
+
+// TODO: add support for comparison == and !=
+func evalStringConcatInfixExpression(op string, left, right object.Object) object.Object {
+	if op != "+" {
+		return newError("unknown operator: %s %s %s", left.Type(), op, right.Type())
+	}
+
+	l := left.(*object.String).Value
+	r := right.(*object.String).Value
+	return &object.String{Value: l + r}
 }
 
 // TODO: revise complicated logic
 func evalIfElseExpression(exp *ast.IfElseExpression, env *object.Environment) object.Object {
 	cond := Eval(exp.Predicate, env)
-	if checkError(cond) { return cond }
+	if checkError(cond) {
+		return cond
+	}
 	if checkTruthy(cond) {
 		return Eval(exp.Consequence, env)
 	} else if exp.Alternative != nil {
@@ -207,7 +238,7 @@ func newError(format string, a ...any) object.Object {
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
 
-// to avoid errors being passed around 
+// to avoid errors being passed around
 func checkError(obj object.Object) bool {
 	if obj != nil {
 		return obj.Type() == object.ERROR_OBJECT
@@ -218,7 +249,7 @@ func checkError(obj object.Object) bool {
 func evalIdentifer(node *ast.Identifier, env *object.Environment) object.Object {
 	val, ok := env.Get(node.Value)
 	if !ok {
-		return newError("erkin o'zgaruvchi: %s", node.Value)
+		return newError("unbound identifier: %s", node.Value)
 	}
 	return val
 }
@@ -228,7 +259,9 @@ func evalExpressions(node []ast.Expression, env *object.Environment) []object.Ob
 	for _, arg := range node {
 		evaled := Eval(arg, env)
 		// check for error and return immediately
-		if checkError(evaled) { return []object.Object{evaled} }
+		if checkError(evaled) {
+			return []object.Object{evaled}
+		}
 		res = append(res, evaled)
 	}
 	return res
@@ -238,7 +271,7 @@ func evalExpressions(node []ast.Expression, env *object.Environment) []object.Ob
 func applyFunctionArgs(fn object.Object, args []object.Object) object.Object {
 	function, ok := fn.(*object.Function)
 	if !ok {
-		return newError("amal emas: %s", fn.Type())
+		return newError("not a function: %s", fn.Type())
 	}
 	env := extendEnv(function, args)
 	res := Eval(function.Body, env)
@@ -259,6 +292,6 @@ func extendEnv(fn *object.Function, args []object.Object) *object.Environment {
 func unwrapReturnValue(res object.Object) object.Object {
 	if val, ok := res.(*object.ReturnValue); ok {
 		return val.Value
-	} 
+	}
 	return res
 }

@@ -7,10 +7,10 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := "deylik ayirish = amal(x, y) { x - y };"
+	input := `deylik ayirish = amal(x, y) { x - y }; deylik a = "foo bar";`
 
 	tests := []struct {
-		got    token.TokenType
+		got  token.TokenType
 		want string
 	}{
 		{token.LET, "deylik"},
@@ -24,9 +24,14 @@ func TestNextToken(t *testing.T) {
 		{token.RBRACKET, ")"},
 		{token.LBRACE, "{"},
 		{token.IDENT, "x"},
-		{token.PLUS, "-"},
+		{token.MINUS, "-"},
 		{token.IDENT, "y"},
 		{token.RBRACE, "}"},
+		{token.SEMICOLON, ";"},
+		{token.LET, "deylik"},
+		{token.IDENT, "a"},
+		{token.ASSIGN, "="},
+		{token.STRING, "foo bar"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}

@@ -95,6 +95,28 @@ func testInfixExpression(t *testing.T, exp ast.Expression, op string, left, righ
 	return true
 }
 
+func TestProgram(t *testing.T) {
+	program := &ast.Program{
+		Statements: []ast.Statement{
+			&ast.LetStatement{
+				Token: token.Token{Type: token.LET, Literal: "deylik"},
+				Name: &ast.Identifier{
+					Token: token.Token{Type: token.IDENT, Literal: "a"},
+					Value: "a",
+				},
+				Value: &ast.Identifier{
+					Token: token.Token{Type: token.IDENT, Literal: "b"},
+					Value: "b",
+				},
+			},
+		},
+	}
+
+	if program.String() != "deylik a = b;" {
+		t.Errorf("program.String not equal to %s: got=%s", "let a = b;", program.String())
+	}
+}
+
 // TODO: move input to text file
 func TestLetStatements(t *testing.T) {
 	input := "deylik x = 1; deylik y = y;"
@@ -170,28 +192,6 @@ func TestReturnStatement(t *testing.T) {
 	}
 }
 
-func TestString(t *testing.T) {
-	program := &ast.Program{
-		Statements: []ast.Statement{
-			&ast.LetStatement{
-				Token: token.Token{Type: token.LET, Literal: "deylik"},
-				Name: &ast.Identifier{
-					Token: token.Token{Type: token.IDENT, Literal: "a"},
-					Value: "a",
-				},
-				Value: &ast.Identifier{
-					Token: token.Token{Type: token.IDENT, Literal: "b"},
-					Value: "b",
-				},
-			},
-		},
-	}
-
-	if program.String() != "deylik a = b;" {
-		t.Errorf("program.String not equal to %s: got=%s", "let a = b;", program.String())
-	}
-}
-
 func TestIdentifierExpression(t *testing.T) {
 	input := "foobar;"
 
@@ -250,10 +250,36 @@ func TestIntegerLiteral(t *testing.T) {
 	}
 }
 
+func TestStringLiteral(t *testing.T) {
+	input := `"hello, world";`
+
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Errorf("program.Statements must be 1 statement: got=%d", len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("program.Statements[0] not *ast.ExpressionStatement: got=%T", program.Statements[0])
+	}
+	literal, ok := stmt.Expression.(*ast.StringLiteral)
+	if !ok {
+		t.Errorf("stmt.Expression not *ast.StringLiteral: got=%T", stmt.Expression)
+	}
+
+	if literal.Value != "hello, world" {
+		t.Errorf("literal.Value not equal to %s: got=%s", "hello, world", literal.Value)
+	}
+}
+
 func TestPrefixExpression(t *testing.T) {
 	tests := []struct {
 		got  string
-		op  string
+		op   string
 		want int
 	}{
 		{"-1;", "-", 1},
@@ -291,7 +317,7 @@ func TestPrefixExpression(t *testing.T) {
 
 func TestInfixExpression(t *testing.T) {
 	tests := []struct {
-		got    string
+		got   string
 		left  int
 		op    string
 		right int

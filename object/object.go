@@ -11,12 +11,13 @@ import (
 type ObjectType string
 
 const (
-	INTEGER_OBJECT = "INTEGER"
-	BOOLEAN_OBJECT = "BOOLEAN"
-	NULL_OBJECT    = "NULL"
+	INTEGER_OBJECT    = "INTEGER"
+	STRING_OBJECT     = "STRING"
+	BOOLEAN_OBJECT    = "BOOLEAN"
+	NULL_OBJECT       = "NULL"
 	RETURN_VAL_OBJECT = "RETURN_VAL"
-	ERROR_OBJECT = "ERROR"
-	FUNCTION_OBJECT = "FUNCTION"
+	ERROR_OBJECT      = "ERROR"
+	FUNCTION_OBJECT   = "FUNCTION"
 )
 
 type Object interface {
@@ -30,6 +31,13 @@ type Integer struct {
 
 func (i *Integer) Type() ObjectType { return INTEGER_OBJECT }
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
+
+type String struct {
+	Value string
+}
+
+func (s *String) Type() ObjectType { return STRING_OBJECT }
+func (s *String) Inspect() string  { return s.Value }
 
 type Boolean struct {
 	Value bool
@@ -48,7 +56,7 @@ type ReturnValue struct {
 }
 
 func (rv *ReturnValue) Type() ObjectType { return RETURN_VAL_OBJECT }
-func (rv *ReturnValue) Inspect() string { return rv.Value.Inspect() }
+func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
 
 // TODO: add stack trace from extra fields of token
 type Error struct {
@@ -56,7 +64,7 @@ type Error struct {
 }
 
 func (e *Error) Type() ObjectType { return ERROR_OBJECT }
-func (e *Error) Inspect() string { return fmt.Sprintf("%s", e.Message) }
+func (e *Error) Inspect() string  { return fmt.Sprintf("%s", e.Message) }
 
 type Environment struct {
 	store map[string]Object
@@ -91,8 +99,8 @@ func (e *Environment) Set(name string, val Object) Object {
 
 type Function struct {
 	Parameters []*ast.Identifier
-	Body *ast.BlockStatement
-	Env *Environment
+	Body       *ast.BlockStatement
+	Env        *Environment
 }
 
 func (f *Function) Type() ObjectType { return FUNCTION_OBJECT }

@@ -18,7 +18,9 @@ const (
 	ELSE   = "ELSE"
 	RETURN = "RETURN"
 
-	INT      = "INT"
+	INT    = "INT"
+	STRING = "STRING"
+
 	ASSIGN   = "="
 	PLUS     = "+"
 	NOT      = "!"
@@ -43,11 +45,11 @@ const (
 
 // TODO: change to uzbek
 var keywords = map[string]TokenType{
-	"deylik":    LET,
+	"deylik": LET,
 	"amal":   FUNC,
-	"ijobiy":   TRUE,
-	"salbiy":  FALSE,
-	"agar":     IF,
+	"ijobiy": TRUE,
+	"salbiy": FALSE,
+	"agar":   IF,
 	"yana":   ELSE,
 	"qaytar": RETURN,
 }

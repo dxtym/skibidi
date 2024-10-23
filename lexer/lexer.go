@@ -61,6 +61,9 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.NewToken(token.LESS, l.char)
 	case '>':
 		tok = token.NewToken(token.MORE, l.char)
+	case '"':
+		tok.Type = token.STRING
+		tok.Literal = l.readString() // TODO: add support for escape chars
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -132,4 +135,16 @@ func (l *Lexer) makeTwoCharToken() token.Token {
 	}
 
 	return token.Token{Type: token.ILLEGAL, Literal: string(ch) + string(l.char)}
+}
+
+func (l *Lexer) readString() string {
+	pos := l.pos + 1
+	for {
+		l.readChar()
+		if l.char == '"' || l.pos == 0 {
+			break // TODO: add error message
+		}
+	}
+
+	return l.input[pos:l.pos]
 }
