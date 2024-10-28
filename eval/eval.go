@@ -247,11 +247,13 @@ func checkError(obj object.Object) bool {
 }
 
 func evalIdentifer(node *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(node.Value)
-	if !ok {
-		return newError("unbound identifier: %s", node.Value)
+	if val, ok := env.Get(node.Value); ok {
+		return val
 	}
-	return val
+	if fn, ok := builtins[node.Value]; ok {
+		return fn
+	}
+	return newError("unbound identifier: %s", node.Value)
 }
 
 func evalExpressions(node []ast.Expression, env *object.Environment) []object.Object {
@@ -269,13 +271,16 @@ func evalExpressions(node []ast.Expression, env *object.Environment) []object.Ob
 
 // enclose inner scope with outer scope for functions
 func applyFunctionArgs(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
+	switch fn := fn.(type) {
+	case *object.Function:
+		env := extendEnv(fn, args)
+		res := Eval(fn.Body, env)
+		return unwrapReturnValue(res)
+	case *object.Builtin:
+		return fn.Fn(args...) // unwrap arguments
+	default:
 		return newError("not a function: %s", fn.Type())
 	}
-	env := extendEnv(function, args)
-	res := Eval(function.Body, env)
-	return unwrapReturnValue(res)
 }
 
 func extendEnv(fn *object.Function, args []object.Object) *object.Environment {

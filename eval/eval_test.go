@@ -275,3 +275,32 @@ func TestCallExpression(t *testing.T) {
 		testIntegerObject(t, evaled, tt.want)
 	}
 }
+
+func TestLenBuiltin(t *testing.T) {
+	tests := []struct {
+		got  string
+		want any
+	}{
+		{`uzunlik("")`, 0},
+		{`uzunlik("hello");`, 5},
+		{`uzunlik("hello world")`, 11},
+		{`uzunlik(1)`, "wrong argument: INTEGER"},
+		{`uzunlik("one", "two")`, "wrong argument number: 2"},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		switch want := tt.want.(type) {
+		case int:
+			testIntegerObject(t, evaled, want)
+		case string:
+			obj, ok := evaled.(*object.Error)
+			if !ok {
+				t.Errorf("evaled not *object.Error: got=%T", evaled)
+			}
+			if obj.Message != tt.want {
+				t.Errorf("obj.Message not equal to %s: got=%s", tt.want, obj.Message)
+			}
+		}
+	}
+}
