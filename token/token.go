@@ -34,10 +34,12 @@ const (
 
 	COMMA     = ","
 	SEMICOLON = ";"
-	LBRACKET  = "("
-	RBRACKET  = ")"
+	LPAREN    = "("
+	RPAREN    = ")"
 	LBRACE    = "{"
 	RBRACE    = "}"
+	LBRACKET  = "["
+	RBRACKET  = "]"
 
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"

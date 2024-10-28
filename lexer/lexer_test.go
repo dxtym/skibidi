@@ -7,7 +7,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `deylik ayirish = amal(x, y) { x - y }; deylik a = "foo bar";`
+	input := `deylik ayirish = amal(x, y) { x - y }; deylik a = "foo bar"; [1, 2];`
 
 	tests := []struct {
 		got  token.TokenType
@@ -17,11 +17,11 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "ayirish"},
 		{token.ASSIGN, "="},
 		{token.FUNC, "amal"},
-		{token.LBRACKET, "("},
+		{token.LPAREN, "("},
 		{token.IDENT, "x"},
 		{token.COMMA, ","},
 		{token.IDENT, "y"},
-		{token.RBRACKET, ")"},
+		{token.RPAREN, ")"},
 		{token.LBRACE, "{"},
 		{token.IDENT, "x"},
 		{token.MINUS, "-"},
@@ -33,6 +33,12 @@ func TestNextToken(t *testing.T) {
 		{token.ASSIGN, "="},
 		{token.STRING, "foo bar"},
 		{token.SEMICOLON, ";"},
+		{token.LBRACKET, "["},
+		{token.INT, "1"},
+		{token.COMMA, ","},
+		{token.INT, "2"},
+		{token.RBRACKET, "]"},
+		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 
@@ -40,10 +46,10 @@ func TestNextToken(t *testing.T) {
 	for _, tt := range tests {
 		token := l.NextToken() // gets next token
 		if token.Type != tt.got {
-			t.Errorf("token.Type %q ga teng emas: %q", tt.got, token.Type)
+			t.Errorf("token.Type not equal to %s: got=%s", tt.got, token.Type)
 		}
 		if token.Literal != tt.want {
-			t.Errorf("token.Literal %q ga teng emas: %q", tt.want, token.Literal)
+			t.Errorf("token.Literal not equal to %s: got=%s", tt.want, token.Literal)
 		}
 	}
 }

@@ -565,7 +565,7 @@ func TestFunctionLiteral(t *testing.T) {
 	}
 	fn, ok := stmt.Expression.(*ast.FunctionLiteral)
 	if !ok {
-		t.Errorf("smt.Expression not *ast.FunctionLiteral: got=%T", stmt.Expression)
+		t.Errorf("stmt.Expression not *ast.FunctionLiteral: got=%T", stmt.Expression)
 	}
 
 	if len(fn.Parameters) != 2 {
@@ -633,7 +633,7 @@ func TestCallExpression(t *testing.T) {
 	}
 	exp, ok := stmt.Expression.(*ast.CallExpression)
 	if !ok {
-		t.Errorf("smt.Expression not *ast.CallExpression: got=%T", stmt.Expression)
+		t.Errorf("stmt.Expression not *ast.CallExpression: got=%T", stmt.Expression)
 	}
 
 	if !testIdentifier(t, exp.Function, "bajarish") {
@@ -645,4 +645,29 @@ func TestCallExpression(t *testing.T) {
 	}
 	testInfixExpression(t, exp.Arguments[0], "+", 1, 2)
 	testInfixExpression(t, exp.Arguments[1], "/", 3, 1)
+}
+
+func TestArrayLiteral(t *testing.T) {
+	input := "[1, 2 * 2, 3 + 3];"
+	l := lexer.NewLexer(input)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("program.Statements[0] not *ast.ExpressionStatement: got=%T", program.Statements[0])
+	}
+	arr, ok := stmt.Expression.(*ast.ArrayLiteral)
+	if !ok {
+		t.Errorf("stmt.Expression not *ast.ArrayLiteral: got=%T", stmt.Expression)
+	}
+
+	if len(arr.Elements) != 3 {
+		t.Errorf("arr.Elements must be 2 statements: got=%d", len(arr.Elements))
+	}
+
+	testIntegerLiteral(t, arr.Elements[0], 1)
+	testInfixExpression(t, arr.Elements[1], "*", 2, 2)
+	testInfixExpression(t, arr.Elements[2], "+", 3, 3)
 }
