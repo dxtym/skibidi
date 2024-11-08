@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dxtym/maymun/ast"
+	"github.com/dxtym/skibidi/ast"
 )
 
 type ObjectType string

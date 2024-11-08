@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dxtym/maymun/eval"
-	"github.com/dxtym/maymun/lexer"
-	"github.com/dxtym/maymun/object"
-	"github.com/dxtym/maymun/parser"
+	"github.com/dxtym/skibidi/eval"
+	"github.com/dxtym/skibidi/lexer"
+	"github.com/dxtym/skibidi/object"
+	"github.com/dxtym/skibidi/parser"
 )
 
 const PROMPT = ">> "

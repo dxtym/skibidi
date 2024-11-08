@@ -3,8 +3,8 @@ package eval
 import (
 	"fmt"
 
-	"github.com/dxtym/maymun/ast"
-	"github.com/dxtym/maymun/object"
+	"github.com/dxtym/skibidi/ast"
+	"github.com/dxtym/skibidi/object"
 )
 
 // define for all time usage

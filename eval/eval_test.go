@@ -3,10 +3,10 @@ package eval_test
 import (
 	"testing"
 
-	"github.com/dxtym/maymun/eval"
-	"github.com/dxtym/maymun/lexer"
-	"github.com/dxtym/maymun/object"
-	"github.com/dxtym/maymun/parser"
+	"github.com/dxtym/skibidi/eval"
+	"github.com/dxtym/skibidi/lexer"
+	"github.com/dxtym/skibidi/object"
+	"github.com/dxtym/skibidi/parser"
 )
 
 var (
@@ -93,8 +93,8 @@ func TestEvalBooleanExpression(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"ijobiy", true},
-		{"salbiy", false},
+		{"kino", true},
+		{"slop", false},
 		{"1 < 2", true},
 		{"1 > 2", false},
 		{"1 < 1", false},
@@ -103,11 +103,11 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
-		{"ijobiy == ijobiy", true},
-		{"salbiy == salbiy", true},
-		{"ijobiy == salbiy", false},
-		{"ijobiy != salbiy", true},
-		{"salbiy != ijobiy", true},
+		{"kino == kino", true},
+		{"slop == slop", true},
+		{"kino == slop", false},
+		{"kino != slop", true},
+		{"slop != kino", true},
 	}
 
 	for _, tt := range tests {
@@ -134,10 +134,10 @@ func TestNotOperator(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"!ijobiy", false},
-		{"!salbiy", true},
-		{"!!ijobiy", true},
-		{"!!salbiy", false},
+		{"!kino", false},
+		{"!slop", true},
+		{"!!kino", true},
+		{"!!slop", false},
 		{"!1", false},
 	}
 
@@ -152,11 +152,11 @@ func TestIfElseExpression(t *testing.T) {
 		got  string
 		want any
 	}{
-		{"agar (1) {2};", 2},
-		{"agar (ijobiy) {1};", 1},
-		{"agar (2 > 1) {2};", 2},
-		{"agar (salbiy) {1};", nil},
-		{"agar (1 > 2) {2} yana {1};", 1},
+		{"hawk (1) {2};", 2},
+		{"hawk (kino) {1};", 1},
+		{"hawk (2 > 1) {2};", 2},
+		{"hawk (slop) {1};", nil},
+		{"hawk (1 > 2) {2} tuah {1};", 1},
 	}
 
 	for _, tt := range tests {
@@ -183,11 +183,11 @@ func TestReturnValue(t *testing.T) {
 		got  string
 		want int
 	}{
-		{"qaytar 1; 2;", 1},
-		{"1 * 2; qaytar 2; 1;", 2},
-		{"qaytar 2; 2 * 1;", 2},
-		{"qaytar 1; qaytar 2;", 1},
-		{"amal(x, y) { x + y; }(1, 2)", 3},
+		{"rizz 1; 2;", 1},
+		{"1 * 2; rizz 2; 1;", 2},
+		{"rizz 2; 2 * 1;", 2},
+		{"rizz 1; rizz 2;", 1},
+		{"brainrot(x, y) { x + y; }(1, 2)", 3},
 	}
 
 	for _, tt := range tests {
@@ -201,10 +201,10 @@ func TestErrorHandling(t *testing.T) {
 		got  string
 		want string
 	}{
-		{"1 + ijobiy;", "type mismatch: INTEGER + BOOLEAN"},
-		{"-ijobiy;", "unknown operator: -BOOLEAN"},
-		{"ijobiy + salbiy;", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"1 - ijobiy; 1;", "type mismatch: INTEGER - BOOLEAN"},
+		{"1 + kino;", "type mismatch: INTEGER + BOOLEAN"},
+		{"-kino;", "unknown operator: -BOOLEAN"},
+		{"kino + slop;", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"1 - kino; 1;", "type mismatch: INTEGER - BOOLEAN"},
 		{"foobar;", "unbound identifier: foobar"},
 		{`"foobar" - "barfoo";`, "unknown operator: STRING - STRING"},
 	}
@@ -227,9 +227,9 @@ func TestLetStatement(t *testing.T) {
 		got  string
 		want int
 	}{
-		{"deylik a = 1; a;", 1},
-		{"deylik a = 1; deylik b = a; b", 1},
-		{"deylik a = 1 + 2; deylik b = a + 1; b;", 4},
+		{"amogus a = 1; a;", 1},
+		{"amogus a = 1; amogus b = a; b", 1},
+		{"amogus a = 1 + 2; amogus b = a + 1; b;", 4},
 	}
 
 	for _, tt := range tests {
@@ -239,7 +239,7 @@ func TestLetStatement(t *testing.T) {
 }
 
 func TestFunction(t *testing.T) {
-	got := "amal(x) { x + 2; }"
+	got := "brainrot(x) { x + 2; }"
 	evaled := testEval(got)
 
 	fn, ok := evaled.(*object.Function)
@@ -264,10 +264,10 @@ func TestCallExpression(t *testing.T) {
 		got  string
 		want int
 	}{
-		{"deylik a = amal(x) { x + 1; }; a(1);", 2},
-		{"deylik a = amal(x) { x + 1; }(1); a;", 2},
-		{"deylik a = amal(x, y) { qaytar x + y; }; a(1, 2);", 3},
-		{"deylik a = amal(x) { amal(y) { x + y; } }; a(1)(2);", 3},
+		{"amogus a = brainrot(x) { x + 1; }; a(1);", 2},
+		{"amogus a = brainrot(x) { x + 1; }(1); a;", 2},
+		{"amogus a = brainrot(x, y) { rizz x + y; }; a(1, 2);", 3},
+		{"amogus a = brainrot(x) { brainrot(y) { x + y; } }; a(1)(2);", 3},
 	}
 
 	for _, tt := range tests {
@@ -281,11 +281,11 @@ func TestLenBuiltin(t *testing.T) {
 		got  string
 		want any
 	}{
-		{`uzunlik("")`, 0},
-		{`uzunlik("hello");`, 5},
-		{`uzunlik("hello world")`, 11},
-		{`uzunlik(1)`, "wrong argument: INTEGER"},
-		{`uzunlik("one", "two")`, "wrong argument number: 2"},
+		{`aura("")`, 0},
+		{`aura("hello");`, 5},
+		{`aura("hello world")`, 11},
+		{`aura(1)`, "wrong argument: INTEGER"},
+		{`aura("one", "two")`, "wrong argument number: 2"},
 	}
 
 	for _, tt := range tests {

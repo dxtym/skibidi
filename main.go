@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/dxtym/maymun/repl"
+	"github.com/dxtym/skibidi/repl"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Printf("Salom, %s!\n", user.Username)
-	fmt.Printf("Maymun tilida buyruqni quyida kiriting:\n")
+	fmt.Printf("Welcome to Ohio, %s!\n", user.Username)
+	fmt.Printf("Rizz up some Skibidi yapology:\n")
 	repl.Start(os.Stdin, os.Stdout)
 }

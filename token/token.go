@@ -47,13 +47,13 @@ const (
 
 // TODO: change to uzbek
 var keywords = map[string]TokenType{
-	"deylik": LET,
-	"amal":   FUNC,
-	"ijobiy": TRUE,
-	"salbiy": FALSE,
-	"agar":   IF,
-	"yana":   ELSE,
-	"qaytar": RETURN,
+	"amogus": LET,
+	"brainrot":   FUNC,
+	"kino": TRUE,
+	"slop": FALSE,
+	"hawk":   IF,
+	"tuah":   ELSE,
+	"rizz": RETURN,
 }
 
 func NewToken(ttype TokenType, char byte) Token {

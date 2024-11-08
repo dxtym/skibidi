@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/dxtym/maymun/ast"
-	"github.com/dxtym/maymun/lexer"
-	"github.com/dxtym/maymun/token"
+	"github.com/dxtym/skibidi/ast"
+	"github.com/dxtym/skibidi/lexer"
+	"github.com/dxtym/skibidi/token"
 )
 
 // TODO: check parser for correctness

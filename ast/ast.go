@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/dxtym/maymun/token"
+	"github.com/dxtym/skibidi/token"
 )
 
 type Node interface {

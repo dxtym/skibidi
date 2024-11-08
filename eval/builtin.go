@@ -3,12 +3,12 @@ package eval
 import (
 	"fmt"
 
-	"github.com/dxtym/maymun/object"
+	"github.com/dxtym/skibidi/object"
 )
 
 // NOTE: implicit infer of value type
 var builtins = map[string]*object.Builtin{
-	"uzunlik": {
+	"aura": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
 				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}

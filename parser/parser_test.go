@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dxtym/maymun/ast"
-	"github.com/dxtym/maymun/lexer"
-	"github.com/dxtym/maymun/token"
+	"github.com/dxtym/skibidi/ast"
+	"github.com/dxtym/skibidi/lexer"
+	"github.com/dxtym/skibidi/token"
 )
 
 func checkParser(t *testing.T, p *Parser) {
@@ -99,7 +99,7 @@ func TestProgram(t *testing.T) {
 	program := &ast.Program{
 		Statements: []ast.Statement{
 			&ast.LetStatement{
-				Token: token.Token{Type: token.LET, Literal: "deylik"},
+				Token: token.Token{Type: token.LET, Literal: "amogus"},
 				Name: &ast.Identifier{
 					Token: token.Token{Type: token.IDENT, Literal: "a"},
 					Value: "a",
@@ -112,14 +112,14 @@ func TestProgram(t *testing.T) {
 		},
 	}
 
-	if program.String() != "deylik a = b;" {
+	if program.String() != "amogus a = b;" {
 		t.Errorf("program.String not equal to %s: got=%s", "let a = b;", program.String())
 	}
 }
 
 // TODO: move input to text file
 func TestLetStatements(t *testing.T) {
-	input := "deylik x = 1; deylik y = y;"
+	input := "amogus x = 1; amogus y = y;"
 
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
@@ -145,7 +145,7 @@ func TestLetStatements(t *testing.T) {
 }
 
 func testLetStatement(t *testing.T, stmt ast.Statement, identifier string) bool {
-	if stmt.TokenLiteral() != "deylik" {
+	if stmt.TokenLiteral() != "amogus" {
 		t.Errorf("stmt.TokenLiteral not %s: got=%s", "let", stmt.TokenLiteral())
 		return false
 	}
@@ -169,7 +169,7 @@ func testLetStatement(t *testing.T, stmt ast.Statement, identifier string) bool 
 }
 
 func TestReturnStatement(t *testing.T) {
-	input := "qaytar 1; qaytar ortirish(10);"
+	input := "rizz 1; rizz add(10);"
 
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
@@ -186,7 +186,7 @@ func TestReturnStatement(t *testing.T) {
 			t.Errorf("stmt not *ast.LetStatement: got=%T", stmt)
 			continue
 		}
-		if rtrn.TokenLiteral() != "qaytar" {
+		if rtrn.TokenLiteral() != "rizz" {
 			t.Errorf("rtrn.TokenLiteral not equal to %s: got=%s", "return", rtrn.TokenLiteral())
 		}
 	}
@@ -387,8 +387,8 @@ func TestOperatorPrecedence(t *testing.T) {
 		want string
 	}{
 		{
-			"3 > 5 == salbiy",
-			"((3 > 5) == salbiy)",
+			"3 > 5 == slop",
+			"((3 > 5) == slop)",
 		},
 		{
 			"1 + (2 + 3) + 4",
@@ -426,8 +426,8 @@ func TestBoolean(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"ijobiy;", true},
-		{"salbiy;", false},
+		{"kino;", true},
+		{"slop;", false},
 	}
 
 	for _, tt := range tests {
@@ -459,7 +459,7 @@ func TestBoolean(t *testing.T) {
 }
 
 func TestIfExpression(t *testing.T) {
-	input := "agar (x < y) { x };"
+	input := "hawk (x < y) { x };"
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	program := p.Parse()
@@ -500,7 +500,7 @@ func TestIfExpression(t *testing.T) {
 }
 
 func TestIfElseExpression(t *testing.T) {
-	input := "agar (x < y) { x } yana { y };"
+	input := "hawk (x < y) { x } tuah { y };"
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	program := p.Parse()
@@ -549,7 +549,7 @@ func TestIfElseExpression(t *testing.T) {
 }
 
 func TestFunctionLiteral(t *testing.T) {
-	input := "amal(x, y) {x + y};"
+	input := "brainrot(x, y) {x + y};"
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	program := p.Parse()
@@ -592,9 +592,9 @@ func TestFunctionArgumentParsing(t *testing.T) {
 		got  string
 		want []string
 	}{
-		{"amal() {}", []string{}},
-		{"amal(x) {}", []string{"x"}},
-		{"amal(x, y, z) {}", []string{"x", "y", "z"}},
+		{"brainrot() {}", []string{}},
+		{"brainrot(x) {}", []string{"x"}},
+		{"brainrot(x, y, z) {}", []string{"x", "y", "z"}},
 	}
 
 	for _, tt := range tests {
@@ -617,7 +617,7 @@ func TestFunctionArgumentParsing(t *testing.T) {
 }
 
 func TestCallExpression(t *testing.T) {
-	input := "bajarish(1 + 2, 3 / 1);"
+	input := "do(1 + 2, 3 / 1);"
 	l := lexer.NewLexer(input)
 	p := NewParser(l)
 	program := p.Parse()
@@ -636,7 +636,7 @@ func TestCallExpression(t *testing.T) {
 		t.Errorf("stmt.Expression not *ast.CallExpression: got=%T", stmt.Expression)
 	}
 
-	if !testIdentifier(t, exp.Function, "bajarish") {
+	if !testIdentifier(t, exp.Function, "do") {
 		t.Errorf("exp.Function not eqaul to %s: got=%s", "add", exp.Function)
 	}
 

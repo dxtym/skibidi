@@ -3,20 +3,20 @@ package lexer
 import (
 	"testing"
 
-	"github.com/dxtym/maymun/token"
+	"github.com/dxtym/skibidi/token"
 )
 
 func TestNextToken(t *testing.T) {
-	input := `deylik ayirish = amal(x, y) { x - y }; deylik a = "foo bar"; [1, 2];`
+	input := `amogus minus = brainrot(x, y) { x - y }; amogus a = "foo bar"; [1, 2];`
 
 	tests := []struct {
 		got  token.TokenType
 		want string
 	}{
-		{token.LET, "deylik"},
-		{token.IDENT, "ayirish"},
+		{token.LET, "amogus"},
+		{token.IDENT, "minus"},
 		{token.ASSIGN, "="},
-		{token.FUNC, "amal"},
+		{token.FUNC, "brainrot"},
 		{token.LPAREN, "("},
 		{token.IDENT, "x"},
 		{token.COMMA, ","},
@@ -28,7 +28,7 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "y"},
 		{token.RBRACE, "}"},
 		{token.SEMICOLON, ";"},
-		{token.LET, "deylik"},
+		{token.LET, "amogus"},
 		{token.IDENT, "a"},
 		{token.ASSIGN, "="},
 		{token.STRING, "foo bar"},
