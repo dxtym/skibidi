@@ -22,6 +22,7 @@ const (
 	PRODUCT     // *
 	PREFIX      // -x
 	CALL        // func(x)
+	INDEX       // x[y]
 )
 
 // associate types with precedences
@@ -35,6 +36,7 @@ var precedences = map[token.TokenType]int{
 	token.MUL:      PRODUCT,
 	token.DIV:      PRODUCT,
 	token.LPAREN:   CALL,
+	token.LBRACKET: INDEX,
 }
 
 type (
@@ -81,6 +83,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.EQUAL, p.parseInfixExpression)
 	p.registerInfix(token.NOTEQUAL, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
+	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
 
 	p.NextToken()
 	p.NextToken()
@@ -421,4 +424,16 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 		return nil
 	}
 	return list
+}
+
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.currToken, Left: left}
+	p.NextToken()
+
+	exp.Index = p.parseExpression(LOWEST)
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+
+	return exp
 }

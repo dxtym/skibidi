@@ -76,6 +76,22 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(root.Operator, left, right)
 	case *ast.IfElseExpression:
 		return evalIfElseExpression(root, env)
+	case *ast.ArrayLiteral:
+		arr := evalExpressions(root.Elements, env)
+		if len(arr) == 1 && checkError(arr[0]) {
+			return arr[0]
+		}
+		return &object.Array{Elements: arr}
+	case *ast.IndexExpression:
+		left := Eval(root.Left, env)
+		if checkError(left) {
+			return left
+		}
+		right := Eval(root.Index, env)
+		if checkError(right) {
+			return right
+		}
+		return evalIndexExpression(left, right)
 	}
 
 	return nil
@@ -299,4 +315,25 @@ func unwrapReturnValue(res object.Object) object.Object {
 		return val.Value
 	}
 	return res
+}
+
+func evalIndexExpression(left, right object.Object) object.Object {
+	switch {
+	case left.Type() == object.ARRAY_OBJECT && right.Type() == object.INTEGER_OBJECT:
+		return evalArrayIndexExpression(left, right)
+	default:
+		return newError("index not supported: %s", left.Type())
+	}
+}
+
+func evalArrayIndexExpression(left, right object.Object) object.Object {
+	arr := left.(*object.Array)
+	idx := right.(*object.Integer).Value
+	max := len(arr.Elements) - 1
+
+	if idx < 0 || idx > max {
+		return NULL // TODO: return error
+	}
+
+	return arr.Elements[idx]
 }

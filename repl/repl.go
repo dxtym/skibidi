@@ -24,6 +24,7 @@ func Start(in io.Reader, out io.Writer) {
 			return
 		}
 
+		// TODO: exit function for repl
 		line := scanner.Text()
 		l := lexer.NewLexer(line)
 		p := parser.NewParser(l)

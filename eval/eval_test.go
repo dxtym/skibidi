@@ -17,8 +17,8 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
-func testEval(in string) object.Object {
-	l := lexer.NewLexer(in)
+func testEval(got string) object.Object {
+	l := lexer.NewLexer(got)
 	p := parser.NewParser(l)
 	program := p.Parse()
 	env := object.NewEnvironment()
@@ -301,6 +301,43 @@ func TestLenBuiltin(t *testing.T) {
 			if obj.Message != tt.want {
 				t.Errorf("obj.Message not equal to %s: got=%s", tt.want, obj.Message)
 			}
+		}
+	}
+}
+
+func TestArrayLiteral(t *testing.T) {
+	got := "[1, 2, 3, 4];"
+	evaled := testEval(got)
+	obj, ok := evaled.(*object.Array)
+	if !ok {
+		t.Errorf("evaled not *object.Array: got=%T", evaled)
+	}
+
+	testIntegerObject(t, obj.Elements[0], 1)
+	testIntegerObject(t, obj.Elements[1], 2)
+	testIntegerObject(t, obj.Elements[2], 3)
+	testIntegerObject(t, obj.Elements[3], 4)
+}
+
+func TestArrayIndexExpression(t *testing.T) {
+	tests := []struct {
+		got  string
+		want any
+	}{
+		{"[1, 2, 3][0]", 1},
+		{"[1, 2, 3][1]", 2},
+		{"[1, 2, 3][2]", 3},
+		{"[1, 2, 3][3]", nil},
+		{"[1, 2, 3][-1]", nil},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		val, ok := tt.want.(int)
+		if ok {
+			testIntegerObject(t, evaled, val)
+		} else {
+			testNullObject(t, evaled)
 		}
 	}
 }
