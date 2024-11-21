@@ -201,12 +201,12 @@ func TestErrorHandling(t *testing.T) {
 		got  string
 		want string
 	}{
-		{"1 + fax;", "type mismatch: INTEGER + BOOLEAN"},
-		{"-fax;", "unknown operator: -BOOLEAN"},
-		{"fax + cap;", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"1 - fax; 1;", "type mismatch: INTEGER - BOOLEAN"},
-		{"foobar;", "unbound identifier: foobar"},
-		{`"foobar" - "barfoo";`, "unknown operator: STRING - STRING"},
+		{"1 + fax;", "bruh: INTEGER + BOOLEAN"},
+		{"-fax;", "bruh: -BOOLEAN"},
+		{"fax + cap;", "bruh: BOOLEAN + BOOLEAN"},
+		{"1 - fax; 1;", "bruh: INTEGER - BOOLEAN"},
+		{"foobar;", "bruh: foobar"},
+		{`"foobar" - "barfoo";`, "bruh: STRING - STRING"},
 	}
 
 	for _, tt := range tests {

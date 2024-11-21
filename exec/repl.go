@@ -22,7 +22,7 @@ func Start(in io.Reader, out io.Writer) {
 	}
 
 	fmt.Printf("Welcome to Ohio, %s!\n", user.Username)
-	fmt.Printf("Rizz up some Skibidi yapology:\n")
+	fmt.Printf("Rizz up some Skibidi:\n")
 
 	scanner := bufio.NewScanner(in)
 	env := object.NewEnvironment()
@@ -55,7 +55,7 @@ func Start(in io.Reader, out io.Writer) {
 
 func printParseErrors(out io.Writer, err []string) {
 	for _, e := range err {
-		io.WriteString(out, "\t" + e +" \n")
+		io.WriteString(out, "\t"+e+" \n")
 	}
 	os.Exit(1)
 }

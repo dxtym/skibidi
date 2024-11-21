@@ -42,18 +42,18 @@ func testIdentifier(t *testing.T, exp ast.Expression, val string) bool {
 }
 
 func testBooleanLiteral(t *testing.T, exp ast.Expression, val bool) bool {
-	bo, ok := exp.(*ast.Boolean)
+	b, ok := exp.(*ast.Boolean)
 	if !ok {
 		t.Errorf("exp not *ast.Boolean: got=%T", exp)
 		return false
 	}
 
-	if bo.Value != val {
-		t.Errorf("bo.Value not equal to %t: got=%t", val, bo.Value)
+	if b.Value != val {
+		t.Errorf("b.Value not equal to %t: got=%t", val, b.Value)
 		return false
 	}
-	if bo.TokenLiteral() != fmt.Sprintf("%t", val) {
-		t.Errorf("bo.TokenLiteral not equal to %t: got=%s", val, bo.TokenLiteral())
+	if b.TokenLiteral() != fmt.Sprintf("%t", val) {
+		t.Errorf("b.TokenLiteral not equal to %t: got=%s", val, b.TokenLiteral())
 		return false
 	}
 
@@ -181,13 +181,13 @@ func TestReturnStatement(t *testing.T) {
 	}
 
 	for _, stmt := range program.Statements {
-		rtrn, ok := stmt.(*ast.ReturnStatement)
+		r, ok := stmt.(*ast.ReturnStatement)
 		if !ok {
 			t.Errorf("stmt not *ast.LetStatement: got=%T", stmt)
 			continue
 		}
-		if rtrn.TokenLiteral() != "rizz" {
-			t.Errorf("rtrn.TokenLiteral not equal to %s: got=%s", "return", rtrn.TokenLiteral())
+		if r.TokenLiteral() != "rizz" {
+			t.Errorf("r.TokenLiteral not equal to %s: got=%s", "return", r.TokenLiteral())
 		}
 	}
 }
@@ -448,16 +448,16 @@ func TestBoolean(t *testing.T) {
 		if !ok {
 			t.Errorf("program.Statements[0] not *ast.ExpressionStatement: got=%T", program.Statements[0])
 		}
-		bo, ok := stmt.Expression.(*ast.Boolean)
+		b, ok := stmt.Expression.(*ast.Boolean)
 		if !ok {
 			t.Errorf("stmt.Expression not *ast.Boolean: got=%T", stmt.Expression)
 		}
 
-		if bo.Value != tt.want {
-			t.Errorf("bo.Value not equal to %t: got=%t", tt.want, bo.Value)
+		if b.Value != tt.want {
+			t.Errorf("b.Value not equal to %t: got=%t", tt.want, b.Value)
 		}
-		if bo.TokenLiteral() != tt.got[:len(tt.got)-1] {
-			t.Errorf("bo.TokenLiteral not equal to %s: got=%s", tt.got[:len(tt.got)-1], bo.TokenLiteral())
+		if b.TokenLiteral() != tt.got[:len(tt.got)-1] {
+			t.Errorf("b.TokenLiteral not equal to %s: got=%s", tt.got[:len(tt.got)-1], b.TokenLiteral())
 		}
 	}
 }
@@ -491,7 +491,7 @@ func TestIfExpression(t *testing.T) {
 	}
 	cons, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
 	if !ok {
-		t.Errorf("Statements[0] not *ast.ExpressionStatement: got=%T", exp.Consequence.Statements[0])
+		t.Errorf("exp.Consequence.Statements[0] not *ast.ExpressionStatement: got=%T", exp.Consequence.Statements[0])
 	}
 
 	if !testIdentifier(t, cons.Expression, "x") {

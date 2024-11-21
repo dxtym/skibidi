@@ -4,7 +4,7 @@ amogus fib = cook(n) {
     } tuah {
         rizz fib(n - 1) + fib(n - 2);
     }
-}
+};
 
 amogus res = fib(10);
 yap(res);

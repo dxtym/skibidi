@@ -15,15 +15,15 @@ var ext = ".skbd"
 
 func Run(in io.Reader, out io.Writer, file string) {
 	if filepath.Ext(file) != ext {
-		printFileErrors(out, "file not supported")
+		printFileErrors(out, "bruh: file not supported")
 	}
 
 	content, err := os.ReadFile(file)
 	if err != nil {
-		printFileErrors(out, "cannot read file")
+		printFileErrors(out, "bruh: cannot read file")
 	}
 
-	env := object.NewEnvironment();
+	env := object.NewEnvironment()
 	l := lexer.NewLexer(string(content))
 	p := parser.NewParser(l)
 
@@ -40,6 +40,6 @@ func Run(in io.Reader, out io.Writer, file string) {
 }
 
 func printFileErrors(out io.Writer, err string) {
-	io.WriteString(out, "\t" + err + "\n")
+	io.WriteString(out, "\t"+err+"\n")
 	os.Exit(1)
 }

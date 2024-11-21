@@ -1,0 +1,12 @@
+amogus map = cook(arr, f) {
+    amogus iter = cook(arr, res) {
+        hawk (aura(arr) == 0) {
+            rizz res;
+        }
+        iter(fam(arr), yeet(res, f(chad(arr))));
+    };
+    rizz iter(arr, []);
+};
+
+amogus res = map([1, 2, 3], cook(x) { x * x; });
+yap(res);

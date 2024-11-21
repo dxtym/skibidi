@@ -11,7 +11,7 @@ var builtins = map[string]*object.Builtin{
 	"yap": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 
 			switch obj := args[0].(type) {
@@ -22,14 +22,14 @@ var builtins = map[string]*object.Builtin{
 			case *object.Array:
 				return &object.Array{Elements: obj.Elements}
 			default:
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", obj.Type())}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", obj.Type())}
 			}
 		},
 	},
 	"aura": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 
 			switch obj := args[0].(type) {
@@ -38,17 +38,17 @@ var builtins = map[string]*object.Builtin{
 			case *object.Array:
 				return &object.Integer{Value: len(obj.Elements)}
 			default:
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", obj.Type())}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", obj.Type())}
 			}
 		},
 	},
 	"chad": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 			if args[0].Type() != object.ARRAY_OBJECT {
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", args[0])}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", args[0])}
 			}
 
 			arr := args[0].(*object.Array)
@@ -62,15 +62,16 @@ var builtins = map[string]*object.Builtin{
 	"skuf": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 			if args[0].Type() != object.ARRAY_OBJECT {
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", args[0])}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", args[0])}
 			}
 
 			arr := args[0].(*object.Array)
-			if len(arr.Elements) > 0 {
-				return arr.Elements[len(arr.Elements)-1]
+			len := len(arr.Elements)
+			if len > 0 {
+				return arr.Elements[len-1]
 			}
 
 			return NULL
@@ -79,10 +80,10 @@ var builtins = map[string]*object.Builtin{
 	"fam": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 			if args[0].Type() != object.ARRAY_OBJECT {
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", args[0])}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", args[0])}
 			}
 
 			arr := args[0].(*object.Array)
@@ -99,10 +100,10 @@ var builtins = map[string]*object.Builtin{
 	"yeet": {
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 2 {
-				return &object.Error{Message: fmt.Sprintf("wrong argument number: %d", len(args))}
+				return &object.Error{Message: fmt.Sprintf("bruh: %d", len(args))}
 			}
 			if args[0].Type() != object.ARRAY_OBJECT {
-				return &object.Error{Message: fmt.Sprintf("wrong argument: %s", args[0])}
+				return &object.Error{Message: fmt.Sprintf("bruh: %s", args[0])}
 			}
 
 			arr := args[0].(*object.Array)

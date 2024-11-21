@@ -15,3 +15,5 @@ amogus fib = cook(n) {
 amogus res = fib(10);
 yap(res);
 ```
+
+To see more, check out the [examples](github.com/dxtym/skibidi/tree/main/examples).

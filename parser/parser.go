@@ -176,7 +176,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) noPrefixFnError(t token.TokenType) {
-	e := fmt.Sprintf("unregistred operation: %s", t)
+	e := fmt.Sprintf("bruh: %s", t)
 	p.err = append(p.err, e)
 }
 
@@ -213,7 +213,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
-		e := fmt.Sprintf("unregistered number: %s", p.currToken.Literal)
+		e := fmt.Sprintf("bruh: %s", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
@@ -264,8 +264,8 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) peekError(t token.TokenType) {
-	e1 := fmt.Sprintf("kelgan token: %s", t)
-	e2 := fmt.Sprintf("kutilgan token: %s", p.nxtToken.Type)
+	e1 := fmt.Sprintf("bruh: %s", t)
+	e2 := fmt.Sprintf("bruh: %s", p.nxtToken.Type)
 	p.err = append(p.err, e1, e2)
 }
 

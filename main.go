@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 
 	"github.com/dxtym/skibidi/exec"
@@ -15,6 +14,6 @@ func main() {
 	case 2:
 		exec.Run(os.Stdin, os.Stdout, os.Args[1])
 	default:
-		panic(errors.New("wrong format"))
+		os.Exit(1)
 	}
 }
