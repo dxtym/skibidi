@@ -115,7 +115,7 @@ func (f *Function) Inspect() string {
 		args = append(args, arg.String())
 	}
 
-	out.WriteString("func(")
+	out.WriteString("cook(")
 	out.WriteString(strings.Join(args, ", "))
 	out.WriteString(") {\n")
 	out.WriteString(f.Body.String())

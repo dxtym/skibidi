@@ -47,13 +47,13 @@ const (
 
 // TODO: redefine to brainrot -> mew
 var keywords = map[string]TokenType{
-	"amogus":   LET,
-	"brainrot": FUNC,
-	"kino":     TRUE,
-	"slop":     FALSE,
-	"hawk":     IF,
-	"tuah":     ELSE,
-	"rizz":     RETURN,
+	"amogus": LET,
+	"cook":   FUNC,
+	"fax":    TRUE,
+	"cap":    FALSE,
+	"hawk":   IF,
+	"tuah":   ELSE,
+	"rizz":   RETURN,
 }
 
 func NewToken(ttype TokenType, char byte) Token {

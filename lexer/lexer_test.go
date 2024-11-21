@@ -7,7 +7,7 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `amogus minus = brainrot(x, y) { x - y }; amogus a = "foo bar"; [1, 2];`
+	input := `amogus minus = cook(x, y) { x - y }; amogus a = "foo bar"; [1, 2];`
 
 	tests := []struct {
 		got  token.TokenType
@@ -16,7 +16,7 @@ func TestNextToken(t *testing.T) {
 		{token.LET, "amogus"},
 		{token.IDENT, "minus"},
 		{token.ASSIGN, "="},
-		{token.FUNC, "brainrot"},
+		{token.FUNC, "cook"},
 		{token.LPAREN, "("},
 		{token.IDENT, "x"},
 		{token.COMMA, ","},

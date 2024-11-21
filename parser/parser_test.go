@@ -113,7 +113,7 @@ func TestProgram(t *testing.T) {
 	}
 
 	if program.String() != "amogus a = b;" {
-		t.Errorf("program.String not equal to %s: got=%s", "let a = b;", program.String())
+		t.Errorf("program.String not equal to %s: got=%s", "amogus a = b;", program.String())
 	}
 }
 
@@ -146,7 +146,7 @@ func TestLetStatements(t *testing.T) {
 
 func testLetStatement(t *testing.T, stmt ast.Statement, identifier string) bool {
 	if stmt.TokenLiteral() != "amogus" {
-		t.Errorf("stmt.TokenLiteral not %s: got=%s", "let", stmt.TokenLiteral())
+		t.Errorf("stmt.TokenLiteral not %s: got=%s", "amogus", stmt.TokenLiteral())
 		return false
 	}
 
@@ -387,8 +387,8 @@ func TestOperatorPrecedence(t *testing.T) {
 		want string
 	}{
 		{
-			"3 > 5 == slop",
-			"((3 > 5) == slop)",
+			"3 > 5 == cap",
+			"((3 > 5) == cap)",
 		},
 		{
 			"1 + (2 + 3) + 4",
@@ -430,8 +430,8 @@ func TestBoolean(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"kino;", true},
-		{"slop;", false},
+		{"fax;", true},
+		{"cap;", false},
 	}
 
 	for _, tt := range tests {
@@ -553,7 +553,7 @@ func TestIfElseExpression(t *testing.T) {
 }
 
 func TestFunctionLiteral(t *testing.T) {
-	got := "brainrot(x, y) {x + y};"
+	got := "cook(x, y) {x + y};"
 	l := lexer.NewLexer(got)
 	p := NewParser(l)
 	program := p.Parse()
@@ -596,9 +596,9 @@ func TestFunctionArgumentParsing(t *testing.T) {
 		got  string
 		want []string
 	}{
-		{"brainrot() {}", []string{}},
-		{"brainrot(x) {}", []string{"x"}},
-		{"brainrot(x, y, z) {}", []string{"x", "y", "z"}},
+		{"cook() {}", []string{}},
+		{"cook(x) {}", []string{"x"}},
+		{"cook(x, y, z) {}", []string{"x", "y", "z"}},
 	}
 
 	for _, tt := range tests {

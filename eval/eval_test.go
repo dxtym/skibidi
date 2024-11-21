@@ -93,8 +93,8 @@ func TestEvalBooleanExpression(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"kino", true},
-		{"slop", false},
+		{"fax", true},
+		{"cap", false},
 		{"1 < 2", true},
 		{"1 > 2", false},
 		{"1 < 1", false},
@@ -103,11 +103,11 @@ func TestEvalBooleanExpression(t *testing.T) {
 		{"1 != 1", false},
 		{"1 == 2", false},
 		{"1 != 2", true},
-		{"kino == kino", true},
-		{"slop == slop", true},
-		{"kino == slop", false},
-		{"kino != slop", true},
-		{"slop != kino", true},
+		{"fax == fax", true},
+		{"cap == cap", true},
+		{"fax == cap", false},
+		{"fax != cap", true},
+		{"cap != fax", true},
 	}
 
 	for _, tt := range tests {
@@ -134,10 +134,10 @@ func TestNotOperator(t *testing.T) {
 		got  string
 		want bool
 	}{
-		{"!kino", false},
-		{"!slop", true},
-		{"!!kino", true},
-		{"!!slop", false},
+		{"!fax", false},
+		{"!cap", true},
+		{"!!fax", true},
+		{"!!cap", false},
 		{"!1", false},
 	}
 
@@ -153,9 +153,9 @@ func TestIfElseExpression(t *testing.T) {
 		want any
 	}{
 		{"hawk (1) {2};", 2},
-		{"hawk (kino) {1};", 1},
+		{"hawk (fax) {1};", 1},
 		{"hawk (2 > 1) {2};", 2},
-		{"hawk (slop) {1};", nil},
+		{"hawk (cap) {1};", nil},
 		{"hawk (1 > 2) {2} tuah {1};", 1},
 	}
 
@@ -187,7 +187,7 @@ func TestReturnValue(t *testing.T) {
 		{"1 * 2; rizz 2; 1;", 2},
 		{"rizz 2; 2 * 1;", 2},
 		{"rizz 1; rizz 2;", 1},
-		{"brainrot(x, y) { x + y; }(1, 2)", 3},
+		{"cook(x, y) { x + y; }(1, 2)", 3},
 	}
 
 	for _, tt := range tests {
@@ -201,10 +201,10 @@ func TestErrorHandling(t *testing.T) {
 		got  string
 		want string
 	}{
-		{"1 + kino;", "type mismatch: INTEGER + BOOLEAN"},
-		{"-kino;", "unknown operator: -BOOLEAN"},
-		{"kino + slop;", "unknown operator: BOOLEAN + BOOLEAN"},
-		{"1 - kino; 1;", "type mismatch: INTEGER - BOOLEAN"},
+		{"1 + fax;", "type mismatch: INTEGER + BOOLEAN"},
+		{"-fax;", "unknown operator: -BOOLEAN"},
+		{"fax + cap;", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"1 - fax; 1;", "type mismatch: INTEGER - BOOLEAN"},
 		{"foobar;", "unbound identifier: foobar"},
 		{`"foobar" - "barfoo";`, "unknown operator: STRING - STRING"},
 	}
@@ -239,7 +239,7 @@ func TestLetStatement(t *testing.T) {
 }
 
 func TestFunction(t *testing.T) {
-	got := "brainrot(x) { x + 2; }"
+	got := "cook(x) { x + 2; }"
 	evaled := testEval(got)
 
 	fn, ok := evaled.(*object.Function)
@@ -264,10 +264,10 @@ func TestCallExpression(t *testing.T) {
 		got  string
 		want int
 	}{
-		{"amogus a = brainrot(x) { x + 1; }; a(1);", 2},
-		{"amogus a = brainrot(x) { x + 1; }(1); a;", 2},
-		{"amogus a = brainrot(x, y) { rizz x + y; }; a(1, 2);", 3},
-		{"amogus a = brainrot(x) { brainrot(y) { x + y; } }; a(1)(2);", 3},
+		{"amogus a = cook(x) { x + 1; }; a(1);", 2},
+		{"amogus a = cook(x) { x + 1; }(1); a;", 2},
+		{"amogus a = cook(x, y) { rizz x + y; }; a(1, 2);", 3},
+		{"amogus a = cook(x) { cook(y) { x + y; } }; a(1)(2);", 3},
 	}
 
 	for _, tt := range tests {
@@ -281,11 +281,19 @@ func TestLenBuiltin(t *testing.T) {
 		got  string
 		want any
 	}{
+		{`yap("hello")`, "hello"},
+		{`yap(123)`, 123},
+		{`yap([1, 2, 3])`, []int{1, 2, 3}},
 		{`aura("")`, 0},
-		{`aura("hello");`, 5},
 		{`aura("hello world")`, 11},
-		{`aura(1)`, "wrong argument: INTEGER"},
-		{`aura("one", "two")`, "wrong argument number: 2"},
+		{"chad([])", NULL},
+		{"chad([1, 2, 3])", 1},
+		{"skuf([])", NULL},
+		{"skuf([1, 2, 3])", 3},
+		{"fam([])", NULL},
+		{"fam([1, 2, 3])", []int{2, 3}},
+		{"yeet([], 1)", []int{1}},
+		{"yeet([1, 2], 3)", []int{1, 2, 3}},
 	}
 
 	for _, tt := range tests {
@@ -294,12 +302,12 @@ func TestLenBuiltin(t *testing.T) {
 		case int:
 			testIntegerObject(t, evaled, want)
 		case string:
-			obj, ok := evaled.(*object.Error)
+			obj, ok := evaled.(*object.String)
 			if !ok {
 				t.Errorf("evaled not *object.Error: got=%T", evaled)
 			}
-			if obj.Message != tt.want {
-				t.Errorf("obj.Message not equal to %s: got=%s", tt.want, obj.Message)
+			if obj.Value != tt.want {
+				t.Errorf("obj.Value not equal to %s: got=%s", tt.want, obj.Value)
 			}
 		}
 	}
