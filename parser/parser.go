@@ -176,7 +176,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) noPrefixFnError(t token.TokenType) {
-	e := fmt.Sprintf("amal emas: %s", t)
+	e := fmt.Sprintf("unregistred operation: %s", t)
 	p.err = append(p.err, e)
 }
 
@@ -213,7 +213,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
-		e := fmt.Sprintf("raqam emas: %s", p.currToken.Literal)
+		e := fmt.Sprintf("unregistered number: %s", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
