@@ -314,14 +314,14 @@ type MapLiteral struct {
 	Pairs map[Expression]Expression
 }
 
-func (ml *MapLiteral) expressionNode() {}
+func (ml *MapLiteral) expressionNode()      {}
 func (ml *MapLiteral) TokenLiteral() string { return ml.Token.Literal }
 func (ml *MapLiteral) String() string {
 	var out bytes.Buffer
 
 	pairs := []string{}
 	for key, val := range ml.Pairs {
-		pairs = append(pairs, key.String() + ": " + val.String())
+		pairs = append(pairs, key.String()+": "+val.String())
 	}
 
 	out.WriteString("{")

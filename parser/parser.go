@@ -177,7 +177,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) noPrefixFnError(t token.TokenType) {
-	e := fmt.Sprintf("No prefix function for this: %s", t)
+	e := fmt.Sprintf("hold this l: %s", t)
 	p.err = append(p.err, e)
 }
 
@@ -214,7 +214,7 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 
 	val, err := strconv.Atoi(p.currToken.Literal)
 	if err != nil {
-		e := fmt.Sprintf("bruh: %s", p.currToken.Literal)
+		e := fmt.Sprintf("sassy baka: %s", p.currToken.Literal)
 		p.err = append(p.err, e)
 		return nil
 	}
@@ -265,8 +265,8 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) peekError(t token.TokenType) {
-	e1 := fmt.Sprintf("Have this: %s", t)
-	e2 := fmt.Sprintf("Want this: %s", p.nxtToken.Type)
+	e1 := fmt.Sprintf("slop: %s", t)
+	e2 := fmt.Sprintf("kino: %s", p.nxtToken.Type)
 	p.err = append(p.err, e1, e2)
 }
 

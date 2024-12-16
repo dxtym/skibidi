@@ -33,7 +33,7 @@ const (
 	NOTEQUAL = "!="
 
 	COMMA     = ","
-	COLON  = ":"
+	COLON     = ":"
 	SEMICOLON = ";"
 	LPAREN    = "("
 	RPAREN    = ")"

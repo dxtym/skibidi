@@ -142,7 +142,7 @@ func evalPrefixExpression(op string, right object.Object) object.Object {
 	case "-":
 		return evalMinusOperatorExpression(right)
 	default:
-		return newError("bruh: %s %s", op, right.Type())
+		return newError("delulu: %s %s", op, right.Type())
 	}
 }
 
@@ -161,7 +161,7 @@ func evalNotOperatorExpression(right object.Object) object.Object {
 
 func evalMinusOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.INTEGER_OBJECT {
-		return newError("bruh: -%s", right.Type())
+		return newError("baka: -%s", right.Type())
 	}
 
 	val := right.(*object.Integer).Value
@@ -180,9 +180,9 @@ func evalInfixExpression(op string, left, right object.Object) object.Object {
 	case op == "==":
 		return boolToBooleanObject(left == right)
 	case left.Type() != right.Type():
-		return newError("bruh: %s %s %s", left.Type(), op, right.Type())
+		return newError("touch grass: %s %s %s", left.Type(), op, right.Type())
 	default:
-		return newError("bruh: %s %s %s", left.Type(), op, right.Type())
+		return newError("delulu: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
@@ -207,14 +207,14 @@ func evalIntegerInfixExpression(op string, left, right object.Object) object.Obj
 	case "==":
 		return boolToBooleanObject(l == r)
 	default:
-		return newError("bruh: %s %s %s", left.Type(), op, right.Type())
+		return newError("delulu: %s %s %s", left.Type(), op, right.Type())
 	}
 }
 
 // TODO: add support for comparison == and !=
 func evalStringConcatInfixExpression(op string, left, right object.Object) object.Object {
 	if op != "+" {
-		return newError("bruh: %s %s %s", left.Type(), op, right.Type())
+		return newError("touch grass: %s %s %s", left.Type(), op, right.Type())
 	}
 
 	l := left.(*object.String).Value
@@ -269,7 +269,7 @@ func evalIdentifer(node *ast.Identifier, env *object.Environment) object.Object 
 	if fn, ok := builtins[node.Value]; ok {
 		return fn
 	}
-	return newError("bruh: %s", node.Value)
+	return newError("delulu: %s", node.Value)
 }
 
 func evalExpressions(node []ast.Expression, env *object.Environment) []object.Object {
@@ -295,7 +295,7 @@ func applyFunctionArgs(fn object.Object, args []object.Object) object.Object {
 	case *object.Builtin:
 		return fn.Fn(args...) // unwrap arguments
 	default:
-		return newError("bruh: %s", fn.Type())
+		return newError("delulu: %s", fn.Type())
 	}
 }
 
@@ -322,7 +322,7 @@ func evalIndexExpression(left, right object.Object) object.Object {
 	case left.Type() == object.ARRAY_OBJECT && right.Type() == object.INTEGER_OBJECT:
 		return evalArrayIndexExpression(left, right)
 	default:
-		return newError("bruh: %s", left.Type())
+		return newError("delulu: %s", left.Type())
 	}
 }
 

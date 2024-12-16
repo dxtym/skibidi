@@ -201,12 +201,12 @@ func TestErrorHandling(t *testing.T) {
 		got  string
 		want string
 	}{
-		{"1 + fax;", "bruh: INTEGER + BOOLEAN"},
-		{"-fax;", "bruh: -BOOLEAN"},
-		{"fax + cap;", "bruh: BOOLEAN + BOOLEAN"},
-		{"1 - fax; 1;", "bruh: INTEGER - BOOLEAN"},
-		{"foobar;", "bruh: foobar"},
-		{`"foobar" - "barfoo";`, "bruh: STRING - STRING"},
+		{"1 + fax;", "touch grass: INTEGER + BOOLEAN"},
+		{"-fax;", "baka: -BOOLEAN"},
+		{"fax + cap;", "delulu: BOOLEAN + BOOLEAN"},
+		{"1 - fax; 1;", "touch grass: INTEGER - BOOLEAN"},
+		{"foobar;", "delulu: foobar"},
+		{`"foobar" - "barfoo";`, "touch grass: STRING - STRING"},
 	}
 
 	for _, tt := range tests {
