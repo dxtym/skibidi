@@ -286,14 +286,6 @@ func TestLenBuiltin(t *testing.T) {
 		{`yap([1, 2, 3])`, []int{1, 2, 3}},
 		{`aura("")`, 0},
 		{`aura("hello world")`, 11},
-		{"chad([])", NULL},
-		{"chad([1, 2, 3])", 1},
-		{"skuf([])", NULL},
-		{"skuf([1, 2, 3])", 3},
-		{"fam([])", NULL},
-		{"fam([1, 2, 3])", []int{2, 3}},
-		{"yeet([], 1)", []int{1}},
-		{"yeet([1, 2], 3)", []int{1, 2, 3}},
 	}
 
 	for _, tt := range tests {

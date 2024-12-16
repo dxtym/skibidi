@@ -16,4 +16,4 @@ amogus res = fib(10);
 yap(res);
 ```
 
-To see more, check out the [examples](github.com/dxtym/skibidi/tree/main/examples).
+To see more, check out the [examples](https://github.com/dxtym/skibidi/tree/main/examples).

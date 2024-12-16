@@ -71,6 +71,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.LBRACKET, p.parseArrayLiteral)
 	p.registerPrefix(token.IF, p.parseIfElseExpression)
 	p.registerPrefix(token.FUNC, p.parseFunctionLiteral)
+	p.registerPrefix(token.LBRACE, p.parseMapLiteral)
 
 	// register infix functions to token types
 	p.infixFnMap = make(map[token.TokenType]infixFn)
@@ -176,7 +177,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 }
 
 func (p *Parser) noPrefixFnError(t token.TokenType) {
-	e := fmt.Sprintf("bruh: %s", t)
+	e := fmt.Sprintf("No prefix function for this: %s", t)
 	p.err = append(p.err, e)
 }
 
@@ -264,8 +265,8 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 }
 
 func (p *Parser) peekError(t token.TokenType) {
-	e1 := fmt.Sprintf("bruh: %s", t)
-	e2 := fmt.Sprintf("bruh: %s", p.nxtToken.Type)
+	e1 := fmt.Sprintf("Have this: %s", t)
+	e2 := fmt.Sprintf("Want this: %s", p.nxtToken.Type)
 	p.err = append(p.err, e1, e2)
 }
 
@@ -436,4 +437,32 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	}
 
 	return exp
+}
+
+func (p *Parser) parseMapLiteral() ast.Expression {
+	mp := &ast.MapLiteral{Token: p.currToken}
+	mp.Pairs = make(map[ast.Expression]ast.Expression)
+
+	for p.nxtToken.Literal != token.RBRACE {
+		p.NextToken()
+		key := p.parseExpression(LOWEST)
+
+		if !p.expectPeek(token.COLON) {
+			return nil
+		}
+
+		p.NextToken()
+		val := p.parseExpression(LOWEST)
+		mp.Pairs[key] = val
+
+		if p.nxtToken.Literal != token.RBRACE && !p.expectPeek(token.COMMA) {
+			return nil
+		}
+	}
+
+	if !p.expectPeek(token.RBRACE) {
+		return nil
+	}
+
+	return mp
 }

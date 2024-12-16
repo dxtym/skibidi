@@ -695,3 +695,41 @@ func TestIndexExpression(t *testing.T) {
 	testIdentifier(t, exp.Left, "arr")
 	testInfixExpression(t, exp.Index, "+", 1, 1)
 }
+
+func TestMapLiteral(t *testing.T) {
+	got := `{"foo": "bar", "baz": "qux"};`
+	l := lexer.NewLexer(got)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("program.Statements[0] not *ast.ExpressionStatement: got=%T", program.Statements[0])
+	}
+	mp, ok := stmt.Expression.(*ast.MapLiteral)
+	if !ok {
+		t.Errorf("stmt.Expression not *ast.MapLiteral: got=%T", stmt.Expression)
+	}
+
+	if len(mp.Pairs) != 2 {
+		t.Errorf("mp.Pairs must be 2 statements: got=%d", len(mp.Pairs))
+	}
+
+	want := map[string]string{"foo": "bar", "baz": "qux"}
+	for key, val := range mp.Pairs {
+		literal, ok := key.(*ast.StringLiteral)
+		if !ok {
+			t.Errorf("key not *ast.StringLiteral: got=%T", key)
+		}
+
+		value, ok := val.(*ast.StringLiteral)
+		if !ok {
+			t.Errorf("val not *ast.StringLiteral: got=%T", val)
+		}
+
+		if value.String() != want[literal.String()] {
+			t.Errorf("value not equal to %s: got=%s", want[literal.String()], value.String())
+		}
+	}
+}
