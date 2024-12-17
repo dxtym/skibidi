@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/dxtym/skibidi/ast"
+	"github.com/spaolacci/murmur3"
 )
 
 type ObjectType string
@@ -21,6 +22,7 @@ const (
 	FUNCTION_OBJECT   = "FUNCTION"
 	BUILTIN_OBJECT    = "BUILTIN"
 	ARRAY_OBJECT      = "ARRAY"
+	MAP_OBJECT        = "MAP"
 )
 
 type Object interface {
@@ -146,5 +148,63 @@ func (a *Array) Inspect() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elems, ", "))
 	out.WriteString("]")
+	return out.String()
+}
+
+type Hasher interface {
+	Hash() Hash
+}
+
+// TODO: cache return values
+type Hash struct {
+	Type  ObjectType
+	Value uint64
+}
+
+func (i *Integer) Hash() Hash {
+	return Hash{Type: i.Type(), Value: uint64(i.Value)}
+}
+
+func (s *String) Hash() Hash {
+	h := murmur3.New64()
+	val := []byte(s.Value)
+	h.Write(val)
+	return Hash{Type: s.Type(), Value: h.Sum64()}
+}
+
+func (b *Boolean) Hash() Hash {
+	var val uint64
+
+	if b.Value {
+		val = 1
+	} else {
+		val = 0
+	}
+
+	return Hash{Type: b.Type(), Value: val}
+}
+
+type Pair struct {
+	Key   Object
+	Value Object
+}
+
+type Map struct {
+	Pairs map[Hash]Pair
+}
+
+func (m *Map) Type() ObjectType { return MAP_OBJECT }
+func (m *Map) Inspect() string {
+	var out bytes.Buffer
+
+	pairs := []string{}
+	for _, val := range m.Pairs {
+		pairs = append(pairs, fmt.Sprintf("%s: %s", val.Key.Inspect(), val.Value.Inspect()))
+	}
+
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ","))
+	out.WriteString("}")
+
 	return out.String()
 }

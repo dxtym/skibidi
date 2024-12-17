@@ -92,6 +92,8 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 			return right
 		}
 		return evalIndexExpression(left, right)
+	case *ast.MapLiteral:
+		return evalMapLiteral(root, env)
 	}
 
 	return nil
@@ -321,6 +323,8 @@ func evalIndexExpression(left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.ARRAY_OBJECT && right.Type() == object.INTEGER_OBJECT:
 		return evalArrayIndexExpression(left, right)
+	case left.Type() == object.MAP_OBJECT:
+		return evalMapIndexExpression(left, right)
 	default:
 		return newError("delulu: %s", left.Type())
 	}
@@ -336,4 +340,46 @@ func evalArrayIndexExpression(left, right object.Object) object.Object {
 	}
 
 	return arr.Elements[idx]
+}
+
+func evalMapLiteral(node *ast.MapLiteral, env *object.Environment) object.Object {
+	mp := make(map[object.Hash]object.Pair)
+
+	for key, val := range node.Pairs {
+		k := Eval(key, env)
+		if checkError(k) {
+			return k
+		}
+
+		h, ok := k.(object.Hasher)
+		if !ok {
+			return newError("delulu: %s", k.Type())
+		}
+
+		v := Eval(val, env)
+		if checkError(v) {
+			return v
+		}
+
+		hashed := h.Hash()
+		mp[hashed] = object.Pair{Key: k, Value: v}
+	}
+
+	return &object.Map{Pairs: mp}
+}
+
+func evalMapIndexExpression(left, right object.Object) object.Object {
+	mp := left.(*object.Map)
+
+	key, ok := right.(object.Hasher)
+	if !ok {
+		return newError("delulu: %s", right.Type())
+	}
+
+	pair, ok := mp.Pairs[key.Hash()]
+	if !ok {
+		return NULL
+	}
+
+	return pair.Value
 }

@@ -341,3 +341,55 @@ func TestArrayIndexExpression(t *testing.T) {
 		}
 	}
 }
+
+func TestMapLiteral(t *testing.T) {
+	got := `{"foo": 1, 2: 2, fax: 3}`
+	evaled := testEval(got)
+	obj, ok := evaled.(*object.Map)
+	if !ok {
+		t.Errorf("evaled not *object.Map: got=%T", evaled)
+	}
+
+	want := map[object.Hash]int{
+		(&object.String{Value: "foo"}).Hash(): 1,
+		(&object.Integer{Value: 2}).Hash():    2,
+		TRUE.Hash():                           3,
+	}
+
+	if len(obj.Pairs) != len(want) {
+		t.Errorf("obj.Pairs must be 3 statments: got=%T", len(obj.Pairs))
+	}
+
+	for key, val := range want {
+		pair, ok := obj.Pairs[key]
+		if !ok {
+			t.Errorf("no pair for %v", key)
+		}
+
+		testIntegerObject(t, pair.Value, val)
+	}
+}
+
+func TestMapIndexExpression(t *testing.T) {
+	tests := []struct {
+		got  string
+		want any
+	}{
+		{`{"foo": 1}["foo"]`, 1},
+		{`{"foo": 1}["bar"]`, nil},
+		{`{}["foo"]`, nil},
+		{`{1: 2}[1]`, 2},
+		{`{fax: 1}[fax]`, 1},
+		{`{cap: 1}[cap]`, 1},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		integer, ok := tt.want.(int)
+		if ok {
+			testIntegerObject(t, evaled, integer)
+		} else {
+			testNullObject(t, evaled)
+		}
+	}
+}
