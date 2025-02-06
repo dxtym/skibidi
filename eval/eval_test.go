@@ -10,8 +10,6 @@ import (
 )
 
 var (
-	env = object.NewEnvironment()
-
 	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
@@ -391,5 +389,20 @@ func TestMapIndexExpression(t *testing.T) {
 		} else {
 			testNullObject(t, evaled)
 		}
+	}
+}
+
+func TestForExpression(t *testing.T) {
+	tests := []struct {
+		got string
+		want int
+	}{
+		{"amogus n = 0; mew (n < 5) { amogus n = n + 1; } n; ", 5},
+		{"amogus n = 0; mew (n >= 5) { amogus n = n + 1; } n; ", 0},
+	}
+
+	for _, tt := range tests {
+		evaled := testEval(tt.got)
+		testIntegerObject(t, evaled, tt.want)
 	}
 }

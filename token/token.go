@@ -17,6 +17,7 @@ const (
 	IF     = "IF"
 	ELSE   = "ELSE"
 	RETURN = "RETURN"
+	FOR    = "FOR"
 
 	INT    = "INT"
 	STRING = "STRING"
@@ -46,7 +47,6 @@ const (
 	EOF     = "EOF"
 )
 
-// TODO: redefine to brainrot -> mew
 var keywords = map[string]TokenType{
 	"amogus": LET,
 	"cook":   FUNC,
@@ -55,6 +55,7 @@ var keywords = map[string]TokenType{
 	"hawk":   IF,
 	"tuah":   ELSE,
 	"rizz":   RETURN,
+	"mew":    FOR,
 }
 
 func NewToken(ttype TokenType, char byte) Token {

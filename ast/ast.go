@@ -329,3 +329,23 @@ func (ml *MapLiteral) String() string {
 	out.WriteString("}")
 	return out.String()
 }
+
+// for <expression> <body>
+type ForExpression struct {
+	Token     token.Token
+	Condition Expression
+	Body      *BlockStatement
+}
+
+func (fl *ForExpression) expressionNode()      {}
+func (fl *ForExpression) TokenLiteral() string { return fl.Token.Literal }
+func (fl *ForExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString(fl.TokenLiteral())
+	out.WriteString("(")
+	out.WriteString(fl.Condition.String())
+	out.WriteString("){")
+	out.WriteString(fl.Body.String())
+	out.WriteString("}")
+	return out.String()
+}

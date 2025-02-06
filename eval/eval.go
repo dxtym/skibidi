@@ -94,6 +94,8 @@ func Eval(root ast.Node, env *object.Environment) object.Object {
 		return evalIndexExpression(left, right)
 	case *ast.MapLiteral:
 		return evalMapLiteral(root, env)
+	case *ast.ForExpression:
+		return evalForExpression(root, env)
 	}
 
 	return nil
@@ -382,4 +384,23 @@ func evalMapIndexExpression(left, right object.Object) object.Object {
 	}
 
 	return pair.Value
+}
+
+func evalForExpression(node *ast.ForExpression, env *object.Environment) object.Object {
+	for {
+		cond := Eval(node.Condition, env)
+		if checkError(cond) {
+			return cond
+		}
+
+		if checkTruthy(cond) {
+			body := Eval(node.Body, env)
+			if body == nil { continue }
+			if body.Type() == object.RETURN_VAL_OBJECT || body.Type() == object.ERROR_OBJECT {
+				return body
+			}
+		} else {
+			return &object.Boolean{Value: false}
+		}
+	}
 }

@@ -733,3 +733,33 @@ func TestMapLiteral(t *testing.T) {
 		}
 	}
 }
+
+func TestForExpression(t *testing.T) {
+	got := "mew (fax) { rizz 1; }"
+	l := lexer.NewLexer(got)
+	p := NewParser(l)
+	program := p.Parse()
+	checkParser(t, p)
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Errorf("program.Statements[0] not *ast.ExpressionStatement: got=%T", program.Statements[0])
+	}
+	loop, ok := stmt.Expression.(*ast.ForExpression)
+	if !ok {
+		t.Errorf("stmt.Expression not *ast.ForExpression: got=%T", stmt.Expression)
+	}
+
+	_, ok = loop.Condition.(*ast.Boolean)
+	if !ok {
+		t.Errorf("loop.Condition not *ast.Boolean: got=%T", loop.Condition)
+	}
+
+	if len(loop.Body.Statements) != 1 {
+		t.Errorf("loop.Body.Statements must be 1 statement: got=%d", len(loop.Body.Statements))
+	}
+	_, ok = loop.Body.Statements[0].(*ast.ReturnStatement)
+	if !ok {
+		t.Errorf("loop.Body.Statements[0] not *ast.ReturnStatement: got=%T", loop.Body.Statements[0])
+	}
+}
